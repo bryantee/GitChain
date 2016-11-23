@@ -7,7 +7,7 @@
     "start": "npm run build:dev && node $npm_package_main",
     "test": "npm run build:dev && mocha",
     "clean": "rm -fr build",
-    "build:dev": "npm run clean && mkdir build && cp -r src/* build && node $npm_package_main"
+    "build:dev": "npm run clean && mkdir build && cp -r src/* build"
   },
   "keywords": [],
   "author": "",
