@@ -10,3 +10,5 @@ app.use(express.static('build'));
 app.listen(process.env.port || 8080, () => {
   console.log(`Listening on port ${process.env.PORT || 8080}`);
 });
+
+module.exports = app;
