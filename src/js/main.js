@@ -8,9 +8,11 @@ document.addEventListener('DOMContentLoaded', e => {
 // Object for all mock data during client mockup phase
 const MOCK_DATA = {
   username: 'bryantee',
+  avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
   currentGoal: 'Finish mocking out API response for client.',
   currentCommitStreakDays: 5,
-  commitsToday: 1
+  commitsToday: 1,
+  highStreak: 15
 }
 
 // Main function to call in "document ready"
@@ -28,14 +30,18 @@ function main() {
   function displayData(data) {
     console.log(data);
     let username = document.querySelector('.username');
+    let avatar = document.querySelector('.avatar');
     let goal = document.querySelector('.current-goal');
     let commitStreak = document.querySelector('.commit-streak');
     let commitsToday = document.querySelector('.commits-today');
+    let highStreak = document.querySelector('.high-streak');
 
     username.textContent = data.username;
+    avatar.src = data.avatar;
     goal.textContent = data.currentGoal;
     commitStreak.textContent = data.currentCommitStreakDays;
     commitsToday.textContent = data.commitsToday;
+    highStreak.textContent = data.highStreak;
   }
 
   // Combines AJAX and render functions
