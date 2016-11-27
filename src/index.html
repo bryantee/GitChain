@@ -4,16 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.css" integrity="sha256-JPJOXvCZ7dfewrTiPV+GJzvdwvrVs3f2jTyMOjLq0aQ=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="css/main.css">
+  <title>GitChain</title>
 </head>
 <body>
   <h1>GitChain</h1>
-  <h2>Current Goal</h2>
-  <div class="current-goal"></div>
-  <div class="commit-streak"></div>
-  <div class="commits-today"></div>
-  <script type="text/javascript" src="js/main.js">
+  <div class="tile is-ancestor">
+    <div class="tile is-4 is-parent is-vertical">
+      <div class="tile is-child box">
+        <p class="title">Commit Streak</p>
+        <p class="commit-streak"></p>
+      </div>
+      <div class="tile is-child box">
+        <p class="title">Commits Today</p>
+        <p class="commits-today"></p>
+      </div>
+    </div>
+    <div class="tile is-parent">
+      <div class="tile is-child box">
+        <p class="title">Current Goal</p>
+        <p class="current-goal is-childl"></p>
+      </div>
+    </div>
 
-  </script>
+
+  </div>
+  <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>
