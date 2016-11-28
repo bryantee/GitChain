@@ -7,10 +7,22 @@ const config = require('./config');
 const app = express();
 app.use(express.static('build'));
 
-// Get model
+// Get models
 const User = require('./models/user');
 
+////////////////////////////
+// Express Routes for API //
+////////////////////////////
 
+// Updating Goal for user
+app.post('/:user/goal', (req, res) => {
+
+});
+
+// Get all user info for dashboard
+app.get('/:user', (req, res) => {
+
+});
 
 // Startup server
 const runServer = function(callback) {
@@ -28,6 +40,7 @@ const runServer = function(callback) {
   });
 };
 
+// Check if server.js is being called directly or through ./require
 if (require.main === module) {
   runServer(err => {
     if (err) {
