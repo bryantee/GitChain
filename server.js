@@ -1,14 +1,16 @@
 'use static';
 
 const express = require('express');
+const mongoose = require('mongoose');
+const config = require('./config');
 
 const app = express();
-app.use(express.static('src'));
+app.use(express.static('build'));
 
 
 
-app.listen(process.env.PORT || 8080, () => {
-  console.log(`Listening on port ${process.env.PORT || 8080}`);
+app.listen(config.PORT, () => {
+  console.log(`Listening on port ${config.PORT}`);
 });
 
 module.exports = app;
