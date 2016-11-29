@@ -45,7 +45,7 @@ describe('GitChain API', () => {
     });
   });
 
-  // start actual tests
+  // HAPPY PATH TESTS
   it('should return 200 status and html on get "/"', done => {
     chai.request(server)
       .get('/')
@@ -53,5 +53,14 @@ describe('GitChain API', () => {
         res.should.have.status(200);
         done();
       });
+  });
+  it('should return JSON with values for user on "/users/:user"', done => {
+
+  });
+  it('should update goal in database on POST to "/users/:user/goal"', done => {
+
+  });
+  it('should add new user on POST to "/users" w/ valid JSON', done => {
+
   });
 });

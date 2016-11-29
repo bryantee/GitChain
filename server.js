@@ -24,7 +24,7 @@ app.post('/users/:user/goal', (req, res) => {
 // Get all user info for dashboard
 app.get('/users/:user', (req, res) => {
   let id = req.params.user;
-  
+
   let query = {
     _id: id
   };
@@ -76,6 +76,18 @@ app.post('/session', (req, res) => {
 // logout
 app.delete('/session', (req, res) => {
 
+});
+
+// Get all users (for testing purposes)
+app.get('/users', (req, res) => {
+  User.find((err, users) => {
+    if (err) {
+      return res.status(500).json({
+        message: 'Internal server error'
+      });
+    }
+    res.status(200).json(users);
+  });
 });
 
 ////////////////////////
