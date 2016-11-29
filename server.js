@@ -23,13 +23,31 @@ app.post('/users/:user/goal', (req, res) => {
 
 // Get all user info for dashboard
 app.get('/users/:user', (req, res) => {
+  let id = req.params.user;
+  
+  let query = {
+    _id: id
+  };
 
+  User.findOne(query, (err, result) => {
+    if (!result) {
+      return res.status(404).send('Bad id: ' + id);
+    } else if (err) {
+      return res.status(500).send('Error: ', err);
+    }
+
+    // Return json identical from User schema in DB
+    // Is this smart? OR should I always repackage it here
+    // before sending?
+    res.status(200).json(result);
+  });
 });
 
 // signup user
 app.post('/users', (req, res) => {
+  let username = req.body.username;
   User.create({
-    username: 'bryantee'
+    username: username
   }, (err, result) => {
     if (err) {
       return res.status(500).json({
