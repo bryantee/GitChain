@@ -17,14 +17,36 @@ const User = require('./models/user');
 ////////////////////////////
 
 // Updating Goal for user
-app.post('/:user/goal', (req, res) => {
+app.post('/users/:user/goal', (req, res) => {
 
 });
 
 // Get all user info for dashboard
-app.get('/:user', (req, res) => {
+app.get('/users/:user', (req, res) => {
 
 });
+
+// signup user
+app.post('/users', (req, res) => {
+
+});
+
+// get webpage for user signup
+app.get('/users/new', (req, res) => {
+
+});
+
+// sign in
+app.get('/session/new')
+
+// authenticate
+app.post('/session')
+
+
+
+////////////////////////
+// End Routes //////////
+////////////////////////
 
 // Startup server
 const runServer = function(callback) {
