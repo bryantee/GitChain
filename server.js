@@ -17,7 +17,33 @@ const User = require('./models/user');
 ////////////////////////////
 
 // Updating Goal for user
-app.post('/users/:user/goal', (req, res) => {
+// Currently takes JSON object with username and new goal
+// Returns JSON object with new goal
+app.put('/users/:user/goal', (req, res) => {
+  let id = req.params.user;
+  let username = req.body.username;
+  let goal = req.body.currentGoal;
+
+  let update = {
+    $set: {
+      currentGoal: goal
+    }
+  };
+
+  let options = {};
+
+  User.findByIdAndUpdate(id, update, options, (err, result) => {
+    if (!result) {
+        return res.status(404).send('Bad id: ' + id);
+    } else if (err) {
+      return res.status(500).send('Error: ' + err);
+    } else if (username !== result.username ) {
+      return res.status(400).send('Username ' + username + ' doesn\'t match user on serving using id ' + id);
+    }
+    res.status(201).json({
+      currentGoal: goal
+    });
+  });
 
 });
 
