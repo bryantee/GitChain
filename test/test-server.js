@@ -109,5 +109,29 @@ describe('GitChain API', () => {
         });
       });
   });
-  it('should add new user on POST to "/users" w/ valid JSON');
+  it('should add new user to db on POST to "/users" w valid JSON', done => {
+    chai.request(app)
+      .post('/users')
+      .send({ 'username': 'norman-bates' })
+      .end((err, res) => {
+        res.should.have.status(201);
+        res.should.be.json;
+        res.body.should.be.a('object');
+        res.body.should.have.property('username', 'norman-bates');
+        chai.request(app)
+          .get('/users')
+          .end((err, res) => {
+            let id = res.body[2]._id;
+            chai.request(app)
+              .get('/users/' + id)
+              .end((err, res) => {
+                res.should.have.status(200);
+                res.should.be.json;
+                res.body.should.be.a('object');
+                res.body.should.have.property('username', 'norman-bates');
+                done();
+              });
+          });
+      });
+  });
 });
