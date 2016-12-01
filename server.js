@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config');
 const bodyParser = require('body-parser');
+const ghRobot = require('./ghRobot');
 
 const app = express();
 app.use(bodyParser.json());
@@ -112,6 +113,7 @@ app.get('/users', (req, res) => {
         message: 'Internal server error'
       });
     }
+    console.log(users);
     res.status(200).json(users);
   });
 });
@@ -144,6 +146,7 @@ if (require.main === module) {
     if (err) {
       console.error(err);
     }
+    ghRobot();
   });
 }
 
