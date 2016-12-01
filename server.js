@@ -85,22 +85,12 @@ app.post('/users', (req, res) => {
   });
 });
 
-// get webpage for user signup
-app.get('/users/new', (req, res) => {
-
-});
-
-// Get webpage for user sign in
-app.get('/session/new', (req, res) => {
-
-});
-
-// authenticate
+// authenticate user
 app.post('/session', (req, res) => {
 
 });
 
-// logout
+// logout user
 app.delete('/session', (req, res) => {
 
 });
