@@ -104,7 +104,7 @@ app.get('/users', (req, res) => {
         message: 'Internal server error'
       });
     }
-    console.log(users);
+    // console.log(users);
     res.status(200).json(users);
   });
 });

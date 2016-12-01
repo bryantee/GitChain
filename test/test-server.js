@@ -24,7 +24,8 @@ describe('GitChain API', () => {
           currentCommitStreakDays: 5,
           commitsToday: 1,
           highStreak: 15,
-          lastCommit: new Date()
+          lastCommit: new Date(),
+          lastCheck: new Date()
         },
         {
           username: 'freddy-krueger',
@@ -33,7 +34,8 @@ describe('GitChain API', () => {
           currentCommitStreakDays: 10,
           commitsToday: 7,
           highStreak: 27,
-          lastCommit: new Date()
+          lastCommit: new Date(),
+          lastCheck: new Date()
         }, function() {
             done();
         });
