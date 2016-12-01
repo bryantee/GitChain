@@ -18,14 +18,24 @@ function scheduler() {
   };
 
   function loopThroughUsers() {
-    let usernames = [];
-    typeof usernames;
+    console.log('Executing loop');
     User.find((err, users) => {
       if (err) console.log(`Error: ${err}`);
       for (let i = 0; i < users.length; i++) {
-        usernames.push(users[i].username);
+        let username = users[i].username;
         console.log(users[i].username);
-        console.log(usernames);
+        getGHData(username).then(function(data) {
+          console.log('Inside the promise then function:');
+          console.log(data);
+          return data;
+        }).then(function(data) {
+          if (data.today_count === 0) console.log('No commits for today');
+          if (data.today_count !== 0) {
+            console.log('Commits!');
+            // update user in db
+            // find user in database and update streak++
+          }
+        });
       }
     });
 
