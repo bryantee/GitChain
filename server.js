@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config');
 const bodyParser = require('body-parser');
+const ghRobot = require('./ghRobot');
 
 const app = express();
 app.use(bodyParser.json());
@@ -73,7 +74,8 @@ app.get('/users/:user', (req, res) => {
 app.post('/users', (req, res) => {
   let username = req.body.username;
   User.create({
-    username: username
+    username: username,
+    lastCheck: new Date()
   }, (err, result) => {
     if (err) {
       return res.status(500).json({
@@ -84,22 +86,12 @@ app.post('/users', (req, res) => {
   });
 });
 
-// get webpage for user signup
-app.get('/users/new', (req, res) => {
-
-});
-
-// Get webpage for user sign in
-app.get('/session/new', (req, res) => {
-
-});
-
-// authenticate
+// authenticate user
 app.post('/session', (req, res) => {
 
 });
 
-// logout
+// logout user
 app.delete('/session', (req, res) => {
 
 });
@@ -112,6 +104,7 @@ app.get('/users', (req, res) => {
         message: 'Internal server error'
       });
     }
+    // console.log(users);
     res.status(200).json(users);
   });
 });
@@ -144,6 +137,7 @@ if (require.main === module) {
     if (err) {
       console.error(err);
     }
+    ghRobot();
   });
 }
 
