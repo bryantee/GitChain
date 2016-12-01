@@ -2,6 +2,7 @@ const gh = require('github_simplestat');
 const schedule = require('node-schedule');
 const User = require('./models/user');
 const mongoose = require('mongoose');
+const moment = require('moment');
 
 
 function scheduler() {
@@ -17,11 +18,17 @@ function scheduler() {
     });
   };
 
-  function loopThroughUsers() {
+  let loopThroughUsers = function() {
     console.log('Executing loop'); // Sanity check
 
+    let query = {
+      lastCheck: {
+        $lte: moment().subtract(1, 'day')
+      }
+    }
+
     // Get all users from database
-    User.find((err, users) => {
+    User.find(query, (err, users) => {
       if (err) console.log(`Error: ${err}`);
       for (let i = 0; i < users.length; i++) {
         let username = users[i].username;
@@ -65,6 +72,16 @@ function scheduler() {
               }
             };
 
+            if (today_count === 0) {
+              update.$set = {
+                currentCommitStreakDays: 0
+              }
+            } else {
+              update.$inc = {
+                currentCommitStreakDays: 1
+              }
+            }
+
             let options = {};
 
             User.findOneAndUpdate(query, update, options, (err, result) => {
@@ -83,10 +100,11 @@ function scheduler() {
   // TODO: Setup cron scheduler
   // Cront scheuler
   let rule = new schedule.RecurrenceRule();
-  rule.second = 1;
+  rule.second = 59;
+  rule.minute = 59;
+  rule.hour = 23;
 
   schedule.scheduleJob(rule, loopThroughUsers);
-
 
 }
 

@@ -74,7 +74,8 @@ app.get('/users/:user', (req, res) => {
 app.post('/users', (req, res) => {
   let username = req.body.username;
   User.create({
-    username: username
+    username: username,
+    lastCheck: new Date()
   }, (err, result) => {
     if (err) {
       return res.status(500).json({
