@@ -25,18 +25,32 @@ function scheduler() {
       if (err) console.log(`Error: ${err}`);
       for (let i = 0; i < users.length; i++) {
         let username = users[i].username;
-        console.log(username);
 
         // make each call to github witthh username
         // returns
         getGHData(username).then(function(data) {
-          console.log('Inside the promise then function:');
-          console.log(`Username inside promise funciton: ${username}`);
-          console.log(data);
+          // console.log(data);
           return data;
         }).then(function(data) {
-          if (data.today_count === 0) console.log('No commits for today');
-          if (data.today_count !== 0) {
+          if (data.today_count === 0) {
+            console.log('No commits for today');
+
+            let query = { username };
+            let update = {
+              $set: {
+                lastCheck: new Date()
+              }
+            };
+            let options = {};
+
+            User.findOneAndUpdate(query, update, options, (err, result) => {
+              if (err) {
+                return console.log(`ERROR: ${err}`);
+              }
+              console.log(`User ${username} is successfully updated with latest check`);
+            });
+
+          } else if (data.today_count !== 0) {
             console.log('Commits!');
             // update user in db
             // find user in database and update streak++
@@ -46,7 +60,8 @@ function scheduler() {
 
             let update = {
               $set: {
-                commitsToday: data.today_count
+                commitsToday: data.today_count,
+                lastCheck: new Date()
               }
             };
 
@@ -56,7 +71,7 @@ function scheduler() {
               if (err) {
                 return console.log(`ERROR: ${err}`);
               }
-              console.log(`User ${username} is successfully updated with new commits in db`);
+              console.log(`User ${username} is successfully updated with (${data.today_count}) new commits in db`);
             });
           }
         });
