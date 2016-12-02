@@ -8,7 +8,7 @@ const ghRobot = require('./ghRobot');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('build'));
+app.use(express.static('src'));
 
 // Get models
 const User = require('./models/user');

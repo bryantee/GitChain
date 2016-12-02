@@ -3,6 +3,7 @@
 // look ma, no jQuery
 document.addEventListener('DOMContentLoaded', e => {
   main();
+  eventListeners();
 });
 
 // Object for all mock data during client mockup phase
@@ -13,6 +14,88 @@ const MOCK_DATA = {
   currentCommitStreakDays: 5,
   commitsToday: 1,
   highStreak: 15
+}
+
+function eventListeners() {
+
+  // views
+  let profileView = document.querySelector('#profile-view');
+  let signUpView = document.querySelector('#signup-view');
+  let logInView = document.querySelector('#login-view');
+  let welcomeView = document.querySelector('#welcome-view');
+  let logoutView = document.querySelector('#logout-view');
+
+  // buttons
+  let profileBtn = document.querySelector('#profile-btn');
+  let signUpBtn = document.querySelector('#signup-btn');
+  let logInBtn = document.querySelector('#login-btn');
+  let welcomeBtn = document.querySelector('#welcome-btn');
+  let logoutBtn = document.querySelector('#logout-btn');
+
+  function resetViews() {
+    let views = document.querySelectorAll('.view');
+    for (let i = 0; i < views.length; i++ ) {
+      views[i].classList.remove('show');
+      views[i].classList.add('hide');
+    }
+  }
+
+  function resetTabs() {
+    let tabs = document.querySelectorAll('.is-tab');
+    for (let i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove('is-active');
+    }
+  }
+
+  ////////////////////////////////
+  // Event listeners for buttons//
+  ////////////////////////////////
+
+  // welcome
+  welcomeBtn.addEventListener('click', e => {
+    resetViews();
+    welcomeView.classList.add('show');
+    welcomeView.classList.remove('hide');
+    resetTabs();
+    welcomeBtn.classList.add('is-active');
+  });
+
+  // profile
+  profileBtn.addEventListener('click', e => {
+    resetViews();
+    profileView.classList.add('show');
+    profileView.classList.remove('hide');
+    resetTabs();
+    profileBtn.classList.add('is-active');
+  });
+
+  // logout
+  logoutBtn.addEventListener('click', e => {
+    resetViews();
+    logoutView.classList.add('show');
+    logoutView.classList.remove('hide');
+    resetTabs();
+    logoutBtn.classList.add('is-active');
+  });
+
+  // signup
+  signUpBtn.addEventListener('click', e => {
+    resetViews();
+    signUpView.classList.add('show');
+    signUpView.classList.remove('hide');
+    resetTabs();
+    signUpBtn.classList.add('is-active');
+  });
+
+  //login
+  logInBtn.addEventListener('click', e => {
+    resetViews();
+    logInView.classList.add('show');
+    logInView.classList.remove('hide');
+    resetTabs();
+    logInBtn.classList.add('is-active');
+  });
+
 }
 
 // Main function to call in "document ready"
