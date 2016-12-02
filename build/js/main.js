@@ -3,6 +3,7 @@
 // look ma, no jQuery
 document.addEventListener('DOMContentLoaded', e => {
   main();
+  eventListeners();
 });
 
 // Object for all mock data during client mockup phase
@@ -13,6 +14,71 @@ const MOCK_DATA = {
   currentCommitStreakDays: 5,
   commitsToday: 1,
   highStreak: 15
+}
+
+function eventListeners() {
+
+  // views
+  let profileView = document.querySelector('#profile-view');
+  let signUpView = document.querySelector('#signup-view');
+  let logInView = document.querySelector('#login-view');
+  let welcomeView = document.querySelector('#welcome-view');
+  let logoutView = document.querySelector('#logout-view');
+
+  // buttons
+  let profileBtn = document.querySelector('#profile-btn');
+  let signUpBtn = document.querySelector('#signup-btn');
+  let logInBtn = document.querySelector('#login-btn');
+  let welcomeBtn = document.querySelector('#welcome-btn');
+  let logoutBtn = document.querySelector('#logout-btn');
+
+  function resetViews() {
+    let views = document.querySelectorAll('.view');
+    for (let i = 0; i < views.length; i++ ) {
+      views[i].classList.remove('show');
+      views[i].classList.add('hide');
+    }
+  }
+
+  ////////////////////////////////
+  // Event listeners for buttons//
+  ////////////////////////////////
+
+  // welcome
+  welcomeBtn.addEventListener('click', e => {
+    resetViews();
+    welcomeView.classList.add('show');
+    welcomeView.classList.remove('hide');
+  });
+
+  // profile
+  profileBtn.addEventListener('click', e => {
+    resetViews();
+    profileView.classList.add('show');
+    profileView.classList.remove('hide');
+  });
+
+  // logout
+  logoutBtn.addEventListener('click', e => {
+    resetViews();
+    logoutView.classList.add('show');
+    logoutView.classList.remove('hide');
+  });
+
+  // signup
+  signUpBtn.addEventListener('click', e => {
+    resetViews();
+    signUpView.classList.add('show');
+    signUpView.classList.remove('hide');
+  });
+
+  //login
+  logInBtn.addEventListener('click', e => {
+    resetViews();
+    logInView.classList.add('show');
+    logInView.classList.remove('hide');
+  });
+
 }
 
 // Main function to call in "document ready"
