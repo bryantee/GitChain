@@ -40,6 +40,13 @@ function eventListeners() {
     }
   }
 
+  function resetTabs() {
+    let tabs = document.querySelectorAll('.is-tab');
+    for (let i = 0; i < tabs.length; i++) {
+      tabs[i].classList.remove('is-active');
+    }
+  }
+
   ////////////////////////////////
   // Event listeners for buttons//
   ////////////////////////////////
@@ -49,6 +56,8 @@ function eventListeners() {
     resetViews();
     welcomeView.classList.add('show');
     welcomeView.classList.remove('hide');
+    resetTabs();
+    welcomeBtn.classList.add('is-active');
   });
 
   // profile
@@ -56,6 +65,8 @@ function eventListeners() {
     resetViews();
     profileView.classList.add('show');
     profileView.classList.remove('hide');
+    resetTabs();
+    profileBtn.classList.add('is-active');
   });
 
   // logout
@@ -63,6 +74,8 @@ function eventListeners() {
     resetViews();
     logoutView.classList.add('show');
     logoutView.classList.remove('hide');
+    resetTabs();
+    logoutBtn.classList.add('is-active');
   });
 
   // signup
@@ -70,6 +83,8 @@ function eventListeners() {
     resetViews();
     signUpView.classList.add('show');
     signUpView.classList.remove('hide');
+    resetTabs();
+    signUpBtn.classList.add('is-active');
   });
 
   //login
@@ -77,6 +92,8 @@ function eventListeners() {
     resetViews();
     logInView.classList.add('show');
     logInView.classList.remove('hide');
+    resetTabs();
+    logInBtn.classList.add('is-active');
   });
 
 }
