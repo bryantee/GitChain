@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const config = require('./config');
 const bodyParser = require('body-parser');
 const ghRobot = require('./ghRobot');
+const request = require('request');
 
 const app = express();
 app.use(bodyParser.json());
@@ -72,18 +73,42 @@ app.get('/users/:user', (req, res) => {
 
 // signup user
 app.post('/users', (req, res) => {
-  let username = req.body.username;
-  User.create({
-    username: username,
-    lastCheck: new Date()
-  }, (err, result) => {
-    if (err) {
-      return res.status(500).json({
-        message: 'Internal server error'
+let username = req.body.username;
+let userObj = {
+  username: username,
+  lastCheck: new Date()
+};
+  // Get initial github data
+  // TODO: Get data from GH and build object to store in DB
+
+  const url = "https://api.github.com/users/" + username;
+  console.log(url);
+
+  request({
+    url: url,
+    json: true,
+    headers: {
+      'User-Agent': 'javascript'
+    }
+  }, (err, response, body) => {
+    if (err) return console.log(`Error making request to Github: ${err}`);
+    if (response.statusCode !== 200) return console.log(`Status code: ${response.statusCode}`);
+    if (response.statusCode === 200) {
+      console.log(`Successful response from GH for user: ${username}`);
+      userObj.avatar = body.avatar_url;
+      // Can get more info here in the future
+      // But for now only care about avatar_url
+
+      User.create(userObj, (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Internal server error'
+          });
+        }
+        res.status(201).json(result);
       });
     }
-    res.status(201).json(result);
-  });
+  })
 });
 
 // authenticate user
