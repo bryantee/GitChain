@@ -9,3 +9,8 @@
 .hide {
   display: none;
 }
+
+.signup-form {
+  margin: 0 auto;
+  margin-top: 1.5em;
+}
