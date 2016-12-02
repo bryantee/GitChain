@@ -133,6 +133,10 @@ app.get('/users', (req, res) => {
   });
 });
 
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/src/index.html');
+});
+
 ////////////////////////
 // End Routes //////////
 ////////////////////////

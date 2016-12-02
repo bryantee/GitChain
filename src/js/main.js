@@ -7,14 +7,14 @@ document.addEventListener('DOMContentLoaded', e => {
 });
 
 // Object for all mock data during client mockup phase
-const MOCK_DATA = {
-  username: 'bryantee',
-  avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
-  currentGoal: 'Finish mocking out API response for client.',
-  currentCommitStreakDays: 5,
-  commitsToday: 1,
-  highStreak: 15
-}
+// const MOCK_DATA = {
+//   username: 'bryantee',
+//   avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
+//   currentGoal: 'Finish mocking out API response for client.',
+//   currentCommitStreakDays: 5,
+//   commitsToday: 1,
+//   highStreak: 15
+// }
 
 function eventListeners() {
 
@@ -103,10 +103,18 @@ function main() {
 
   // This is currently mocked up with timeout
   // But will be replaced with an AJAX call to backend once complete
-  function getData(callback) {
-    setTimeout(function(){
-      callback(MOCK_DATA)
-    }, 1000);
+  function getData(callback, username) {
+    // setTimeout(function(){
+    //   callback(MOCK_DATA)
+    // }, 1000);
+    let url = '/users/' + username;
+    fetch(url)
+      .then(response => {
+        return response.json();
+      }).then( response => {
+        callback(response);
+      });
+
   }
 
   // Takes response from AJAX to render data on page
@@ -129,7 +137,8 @@ function main() {
 
   // Combines AJAX and render functions
   function getAndDisplayData(){
-    getData(displayData);
+    let username = window.location.pathname.split('/')[2];
+    getData(displayData, username);
   }
 
   // Makes the call
