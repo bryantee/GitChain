@@ -10,7 +10,7 @@
   display: none;
 }
 
-.signup-form {
+.signup-form, .login-form {
   margin: 0 auto;
   margin-top: 1.5em;
 }
