@@ -22,9 +22,13 @@ const User = require('./models/user');
 // Currently takes JSON object with username and new goal
 // Returns JSON object with new goal
 app.put('/users/:user/goal', (req, res) => {
-  let id = req.params.user;
+  let user = req.params.user;
   let username = req.body.username;
   let goal = req.body.currentGoal;
+
+  let query = {
+    username: user
+  };
 
   let update = {
     $set: {
@@ -34,32 +38,28 @@ app.put('/users/:user/goal', (req, res) => {
 
   let options = {};
 
-  User.findByIdAndUpdate(id, update, options, (err, result) => {
+  User.findOneAndUpdate(query, update, options, (err, result) => {
     if (!result) {
-        return res.status(404).send('Bad id: ' + id);
+        return res.status(404).send('No matching user: ' + user);
     } else if (err) {
       return res.status(500).send('Error: ' + err);
-    } else if (username !== result.username ) {
-      return res.status(400).send('Username ' + username + ' doesn\'t match user on serving using id ' + id);
+    } else {
+      res.status(201).json({ currentGoal: goal });
     }
-    res.status(201).json({
-      currentGoal: goal
-    });
   });
-
 });
 
 // Get all user info for dashboard
 app.get('/users/:user', (req, res) => {
-  let id = req.params.user;
+  let username = req.params.user;
 
   let query = {
-    _id: id
+    username
   };
 
   User.findOne(query, (err, result) => {
     if (!result) {
-      return res.status(404).send('Bad id: ' + id);
+      return res.status(404).send('Bad username: ' + username);
     } else if (err) {
       return res.status(500).send('Error: ', err);
     }
@@ -82,7 +82,6 @@ let userObj = {
   // TODO: Get data from GH and build object to store in DB
 
   const url = "https://api.github.com/users/" + username;
-  console.log(url);
 
   request({
     url: url,
@@ -94,7 +93,7 @@ let userObj = {
     if (err) return console.log(`Error making request to Github: ${err}`);
     if (response.statusCode !== 200) return console.log(`Status code: ${response.statusCode}`);
     if (response.statusCode === 200) {
-      console.log(`Successful response from GH for user: ${username}`);
+      // console.log(`Successful response from GH for user: ${username}`);
       userObj.avatar = body.avatar_url;
       // Can get more info here in the future
       // But for now only care about avatar_url
