@@ -8,6 +8,68 @@ const moment = require('moment');
 function scheduler() {
   console.log('Executing scheduler');
 
+  let updateByUser = function(username) {
+    // make each call to github witthh username
+    // returns
+    getGHData(username).then(function(data) {
+      // console.log(data);
+      return data;
+    }).then(function(data) {
+      if (data.today_count === 0) {
+        console.log('No commits for today');
+
+        let query = { username };
+        let update = {
+          $set: {
+            lastCheck: new Date()
+          }
+        };
+        let options = {};
+
+        User.findOneAndUpdate(query, update, options, (err, result) => {
+          if (err) {
+            return console.log(`ERROR: ${err}`);
+          }
+          console.log(`User ${username} is successfully updated with latest check`);
+        });
+
+      } else if (data.today_count !== 0) {
+        console.log('Commits!');
+        // update user in db
+        // find user in database and update streak++
+        let query = {
+          username
+        };
+
+        let update = {
+          $set: {
+            commitsToday: data.today_count,
+            lastCheck: new Date()
+          }
+        };
+
+        if (data.today_count === 0) {
+          update.$set = {
+            currentCommitStreakDays: 0
+          }
+        } else {
+          update.$inc = {
+            currentCommitStreakDays: 1
+          }
+        }
+
+        let options = {};
+
+        User.findOneAndUpdate(query, update, options, (err, result) => {
+          if (err) {
+            return console.log(`ERROR: ${err}`);
+          }
+          console.log(`User ${username} is successfully updated with (${data.today_count}) new commits in db`);
+        });
+      }
+    });
+  }
+
   // setup promise to be used for each request to GH
   function getGHData(username) {
     return new Promise(function(resolve) {
@@ -21,77 +83,13 @@ function scheduler() {
   let loopThroughUsers = function() {
     console.log('Executing loop'); // Sanity check
 
-    let query = {
-      lastCheck: {
-        $lte: moment().subtract(1, 'day')
-      }
-    }
-
     // Get all users from database
-    User.find(query, (err, users) => {
+    User.find((err, users) => {
       if (err) console.log(`Error: ${err}`);
       for (let i = 0; i < users.length; i++) {
         let username = users[i].username;
 
-        // make each call to github witthh username
-        // returns
-        getGHData(username).then(function(data) {
-          // console.log(data);
-          return data;
-        }).then(function(data) {
-          if (data.today_count === 0) {
-            console.log('No commits for today');
-
-            let query = { username };
-            let update = {
-              $set: {
-                lastCheck: new Date()
-              }
-            };
-            let options = {};
-
-            User.findOneAndUpdate(query, update, options, (err, result) => {
-              if (err) {
-                return console.log(`ERROR: ${err}`);
-              }
-              console.log(`User ${username} is successfully updated with latest check`);
-            });
-
-          } else if (data.today_count !== 0) {
-            console.log('Commits!');
-            // update user in db
-            // find user in database and update streak++
-            let query = {
-              username
-            };
-
-            let update = {
-              $set: {
-                commitsToday: data.today_count,
-                lastCheck: new Date()
-              }
-            };
-
-            if (today_count === 0) {
-              update.$set = {
-                currentCommitStreakDays: 0
-              }
-            } else {
-              update.$inc = {
-                currentCommitStreakDays: 1
-              }
-            }
-
-            let options = {};
-
-            User.findOneAndUpdate(query, update, options, (err, result) => {
-              if (err) {
-                return console.log(`ERROR: ${err}`);
-              }
-              console.log(`User ${username} is successfully updated with (${data.today_count}) new commits in db`);
-            });
-          }
-        });
+        updateByUser(username);
       }
     });
 
@@ -105,6 +103,8 @@ function scheduler() {
   rule.hour = 23;
 
   schedule.scheduleJob(rule, loopThroughUsers);
+
+  return updateByUser;
 
 }
 

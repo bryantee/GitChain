@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const ghRobot = require('./ghRobot');
 const request = require('request');
 
+let updateByUser;
+
 const app = express();
 app.use(bodyParser.json());
 app.use(express.static('src'));
@@ -17,6 +19,15 @@ const User = require('./models/user');
 ////////////////////////////
 // Express Routes for API //
 ////////////////////////////
+
+app.get('/user/update/:username', (req, res) => {
+  updateByUser(req.params.username);
+  res.sendStatus(200);
+});
+
+app.get('/users/currentUser', (req, res) => {
+  res.json(req[user]);
+});
 
 // Updating Goal for user
 // Currently takes JSON object with username and new goal
@@ -165,7 +176,7 @@ if (require.main === module) {
     if (err) {
       console.error(err);
     }
-    ghRobot();
+    updateByUser = ghRobot();
   });
 }
 
