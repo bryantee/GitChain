@@ -62,9 +62,9 @@ describe('GitChain API', () => {
     chai.request(app)
       .get('/users')
       .end((err, res) => {
-        let id = res.body[0]._id;
+        let username = res.body[0].username;
         chai.request(app)
-          .get('/users/' + id)
+          .get('/users/' + username)
           .end((err, res) => {
             res.should.have.status(200);
             res.should.be.json;
@@ -82,34 +82,28 @@ describe('GitChain API', () => {
   });
   it('should update goal in database on POST to "/users/:user/goal"', done => {
     chai.request(app)
-    .get('/users')
-    .end((err, res) => {
-      let id = res.body[1]._id;
-      res.body.should.have.length(2);
-      chai.request(app)
-        .put('/users/' + id + '/goal')
-        .send({'username': 'freddy-krueger', 'currentGoal': 'Pick all the flowers'})
-        .end((err, res) => {
-          res.should.have.status(201);
-          res.should.be.json;
-          res.body.should.have.property('currentGoal', 'Pick all the flowers')
-          chai.request(app)
-            .get('/users/' + id)
-            .end((err, res) => {
-              res.should.have.status(200);
-              res.should.be.json;
-              res.body.should.be.a('object');
-              res.body.should.have.property('username', 'freddy-krueger');
-              res.body.should.have.property('avatar');
-              res.body.should.have.property('currentGoal', 'Pick all the flowers');
-              res.body.should.have.property('currentCommitStreakDays', 10);
-              res.body.should.have.property('commitsToday', 7);
-              res.body.should.have.property('highStreak', 27);
-              res.body.should.have.property('lastCommit');
-              done();
-            });
+      .put('/users/freddy-krueger/goal')
+      .send({'username': 'freddy-krueger', 'currentGoal': 'Pick all the flowers'})
+      .end((err, res) => {
+        res.should.have.status(201);
+        res.should.be.json;
+        res.body.should.have.property('currentGoal', 'Pick all the flowers')
+        chai.request(app)
+          .get('/users/freddy-krueger')
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.should.be.json;
+            res.body.should.be.a('object');
+            res.body.should.have.property('username', 'freddy-krueger');
+            res.body.should.have.property('avatar');
+            res.body.should.have.property('currentGoal', 'Pick all the flowers');
+            res.body.should.have.property('currentCommitStreakDays', 10);
+            res.body.should.have.property('commitsToday', 7);
+            res.body.should.have.property('highStreak', 27);
+            res.body.should.have.property('lastCommit');
+            done();
+          });
         });
-      });
   });
   it('should add new user to db on POST to "/users" w valid JSON', done => {
     chai.request(app)
@@ -123,9 +117,9 @@ describe('GitChain API', () => {
         chai.request(app)
           .get('/users')
           .end((err, res) => {
-            let id = res.body[2]._id;
+            let username = res.body[2].username;
             chai.request(app)
-              .get('/users/' + id)
+              .get('/users/' + username)
               .end((err, res) => {
                 res.should.have.status(200);
                 res.should.be.json;

@@ -4,9 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "postinstall": "npm run build:dev",
     "start": "node $npm_package_main",
-    "test": "npm run build:dev && mocha",
+    "test": "mocha",
     "clean:dev": "rm -fr build",
     "build:dev": "npm run clean:dev && mkdir build && cp -r src/* build"
   },
@@ -25,6 +24,7 @@
     "github_simplestat": "^6.0.0",
     "moment": "^2.17.0",
     "mongoose": "^4.7.0",
-    "node-schedule": "^1.2.0"
+    "node-schedule": "^1.2.0",
+    "request": "^2.79.0"
   }
 }

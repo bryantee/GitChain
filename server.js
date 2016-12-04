@@ -5,10 +5,13 @@ const mongoose = require('mongoose');
 const config = require('./config');
 const bodyParser = require('body-parser');
 const ghRobot = require('./ghRobot');
+const request = require('request');
+
+let updateByUser;
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('src'));
+app.use(express.static('public'));
 
 // Get models
 const User = require('./models/user');
@@ -17,13 +20,31 @@ const User = require('./models/user');
 // Express Routes for API //
 ////////////////////////////
 
+app.post('/user/update/:username', (req, res) => {
+  let username = req.body.username;
+  // make updateByUser return a promise
+  // and respond status 200 once resolved
+  updateByUser(username, () => {
+    res.sendStatus(200);
+  });
+  // once resolved, call this -->
+});
+
+app.get('/users/currentUser', (req, res) => {
+  res.json(req[user]);
+});
+
 // Updating Goal for user
 // Currently takes JSON object with username and new goal
 // Returns JSON object with new goal
 app.put('/users/:user/goal', (req, res) => {
-  let id = req.params.user;
+  let user = req.params.user;
   let username = req.body.username;
   let goal = req.body.currentGoal;
+
+  let query = {
+    username: user
+  };
 
   let update = {
     $set: {
@@ -33,32 +54,28 @@ app.put('/users/:user/goal', (req, res) => {
 
   let options = {};
 
-  User.findByIdAndUpdate(id, update, options, (err, result) => {
+  User.findOneAndUpdate(query, update, options, (err, result) => {
     if (!result) {
-        return res.status(404).send('Bad id: ' + id);
+        return res.status(404).send('No matching user: ' + user);
     } else if (err) {
       return res.status(500).send('Error: ' + err);
-    } else if (username !== result.username ) {
-      return res.status(400).send('Username ' + username + ' doesn\'t match user on serving using id ' + id);
+    } else {
+      res.status(201).json({ currentGoal: goal });
     }
-    res.status(201).json({
-      currentGoal: goal
-    });
   });
-
 });
 
 // Get all user info for dashboard
 app.get('/users/:user', (req, res) => {
-  let id = req.params.user;
+  let username = req.params.user;
 
   let query = {
-    _id: id
+    username
   };
 
   User.findOne(query, (err, result) => {
     if (!result) {
-      return res.status(404).send('Bad id: ' + id);
+      return res.status(404).send('Bad username: ' + username);
     } else if (err) {
       return res.status(500).send('Error: ', err);
     }
@@ -72,18 +89,41 @@ app.get('/users/:user', (req, res) => {
 
 // signup user
 app.post('/users', (req, res) => {
-  let username = req.body.username;
-  User.create({
-    username: username,
-    lastCheck: new Date()
-  }, (err, result) => {
-    if (err) {
-      return res.status(500).json({
-        message: 'Internal server error'
+let username = req.body.username;
+let userObj = {
+  username: username,
+  lastCheck: new Date()
+};
+  // Get initial github data
+  // TODO: Get data from GH and build object to store in DB
+
+  const url = "https://api.github.com/users/" + username;
+
+  request({
+    url: url,
+    json: true,
+    headers: {
+      'User-Agent': 'javascript'
+    }
+  }, (err, response, body) => {
+    if (err) return console.log(`Error making request to Github: ${err}`);
+    if (response.statusCode !== 200) return console.log(`Status code: ${response.statusCode}`);
+    if (response.statusCode === 200) {
+      // console.log(`Successful response from GH for user: ${username}`);
+      userObj.avatar = body.avatar_url;
+      // Can get more info here in the future
+      // But for now only care about avatar_url
+
+      User.create(userObj, (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Internal server error'
+          });
+        }
+        res.status(201).json(result);
       });
     }
-    res.status(201).json(result);
-  });
+  })
 });
 
 // authenticate user
@@ -107,6 +147,10 @@ app.get('/users', (req, res) => {
     // console.log(users);
     res.status(200).json(users);
   });
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 ////////////////////////
@@ -137,7 +181,7 @@ if (require.main === module) {
     if (err) {
       console.error(err);
     }
-    ghRobot();
+    updateByUser = ghRobot();
   });
 }
 
