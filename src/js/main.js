@@ -32,6 +32,8 @@ function eventListeners() {
   let welcomeBtn = document.querySelector('#welcome-btn');
   let logoutBtn = document.querySelector('#logout-btn');
 
+  let updateBtn = document.querySelector('#update-btn');
+
   function resetViews() {
     let views = document.querySelectorAll('.view');
     for (let i = 0; i < views.length; i++ ) {
@@ -96,10 +98,31 @@ function eventListeners() {
     logInBtn.classList.add('is-active');
   });
 
+  // Update info button
+  updateBtn.addEventListener('click', e => {
+    updateBtn.classList.add('is-loading');
+    let username = window.location.pathname.split('/')[2];
+    let url = '/user/update/' + username;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ username: username }),
+      headers: new Headers({ "Content-Type": "application/json"})
+    })
+      .then(response => {
+        console.log(response);
+        if (response.status === 200) {
+          main();
+        };
+        // remove loading animation
+        updateBtn.classList.remove('is-loading');
+      });
+  });
+
 }
 
 // Main function to call in "document ready"
 function main() {
+  console.log('Main called');
 
   // This is currently mocked up with timeout
   // But will be replaced with an AJAX call to backend once complete

@@ -7,14 +7,14 @@ document.addEventListener('DOMContentLoaded', e => {
 });
 
 // Object for all mock data during client mockup phase
-const MOCK_DATA = {
-  username: 'bryantee',
-  avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
-  currentGoal: 'Finish mocking out API response for client.',
-  currentCommitStreakDays: 5,
-  commitsToday: 1,
-  highStreak: 15
-}
+// const MOCK_DATA = {
+//   username: 'bryantee',
+//   avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
+//   currentGoal: 'Finish mocking out API response for client.',
+//   currentCommitStreakDays: 5,
+//   commitsToday: 1,
+//   highStreak: 15
+// }
 
 function eventListeners() {
 
@@ -31,6 +31,8 @@ function eventListeners() {
   let logInBtn = document.querySelector('#login-btn');
   let welcomeBtn = document.querySelector('#welcome-btn');
   let logoutBtn = document.querySelector('#logout-btn');
+
+  let updateBtn = document.querySelector('#update-btn');
 
   function resetViews() {
     let views = document.querySelectorAll('.view');
@@ -96,17 +98,44 @@ function eventListeners() {
     logInBtn.classList.add('is-active');
   });
 
+  // Update info button
+  updateBtn.addEventListener('click', e => {
+    updateBtn.classList.add('is-loading');
+    let username = window.location.pathname.split('/')[2];
+    let url = '/user/update/' + username;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ username: username }),
+      headers: new Headers({ "Content-Type": "application/json"})
+    })
+      .then(response => {
+        console.log(response);
+        if (response.status === 200) {
+          main();
+        };
+      });
+  });
+
 }
 
 // Main function to call in "document ready"
 function main() {
+  console.log('Main called');
 
   // This is currently mocked up with timeout
   // But will be replaced with an AJAX call to backend once complete
-  function getData(callback) {
-    setTimeout(function(){
-      callback(MOCK_DATA)
-    }, 1000);
+  function getData(callback, username) {
+    // setTimeout(function(){
+    //   callback(MOCK_DATA)
+    // }, 1000);
+    let url = '/users/' + username;
+    fetch(url)
+      .then(response => {
+        return response.json();
+      }).then( response => {
+        callback(response);
+      });
+
   }
 
   // Takes response from AJAX to render data on page
@@ -129,7 +158,8 @@ function main() {
 
   // Combines AJAX and render functions
   function getAndDisplayData(){
-    getData(displayData);
+    let username = window.location.pathname.split('/')[2];
+    getData(displayData, username);
   }
 
   // Makes the call

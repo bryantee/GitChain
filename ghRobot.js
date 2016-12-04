@@ -8,7 +8,7 @@ const moment = require('moment');
 function scheduler() {
   console.log('Executing scheduler');
 
-  let updateByUser = function(username) {
+  let updateByUser = function(username, callback) {
     // make each call to github witthh username
     // returns
     getGHData(username).then(function(data) {
@@ -31,6 +31,7 @@ function scheduler() {
             return console.log(`ERROR: ${err}`);
           }
           console.log(`User ${username} is successfully updated with latest check`);
+          if (callback) callback();
         });
 
       } else if (data.today_count !== 0) {
@@ -65,8 +66,14 @@ function scheduler() {
             return console.log(`ERROR: ${err}`);
           }
           console.log(`User ${username} is successfully updated with (${data.today_count}) new commits in db`);
+          if (callback) callback();
         });
       }
+    // }).then( data => {
+    //   console.log('updateByUser Resolved!');
+    //   return new Promise( resolve => {
+    //     resolve('resolved');
+    //   });
     });
   }
 

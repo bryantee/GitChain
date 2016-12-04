@@ -20,9 +20,14 @@ const User = require('./models/user');
 // Express Routes for API //
 ////////////////////////////
 
-app.get('/user/update/:username', (req, res) => {
-  updateByUser(req.params.username);
-  res.sendStatus(200);
+app.post('/user/update/:username', (req, res) => {
+  let username = req.body.username;
+  // make updateByUser return a promise
+  // and respond status 200 once resolved
+  updateByUser(username, () => {
+    res.sendStatus(200);
+  });
+  // once resolved, call this -->
 });
 
 app.get('/users/currentUser', (req, res) => {
