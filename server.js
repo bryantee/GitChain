@@ -11,7 +11,7 @@ let updateByUser;
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('src'));
+app.use(express.static('public'));
 
 // Get models
 const User = require('./models/user');
@@ -150,7 +150,7 @@ app.get('/users', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/src/index.html');
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 ////////////////////////
