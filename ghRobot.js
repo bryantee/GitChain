@@ -10,38 +10,40 @@ function scheduler() {
 
   let updateByUser = function(username, callback) {
     // make each call to github witthh username
-    // returns
     getGHData(username).then(function(data) {
       // console.log(data);
       return data;
     }).then(function(data) {
       if (data.today_count === 0) {
-        console.log('No commits for today');
+        console.log('No commits for today, setting streak to 0 :(');
 
+        // Params to pass to mongoose update method
         let query = { username };
         let update = {
           $set: {
-            lastCheck: new Date()
+            lastCheck: new Date(),
+            commitsToday: data.today_count
           }
         };
         let options = {};
 
+        // update DB
         User.findOneAndUpdate(query, update, options, (err, result) => {
           if (err) {
             return console.log(`ERROR: ${err}`);
           }
-          console.log(`User ${username} is successfully updated with latest check`);
+          console.log(`User ${username} is successfully updated with latest info`);
           if (callback) callback();
         });
 
       } else if (data.today_count !== 0) {
         console.log('Commits!');
+
         // update user in db
         // find user in database and update streak++
         let query = {
           username
         };
-
         let update = {
           $set: {
             commitsToday: data.today_count,

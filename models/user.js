@@ -8,8 +8,14 @@ const UserSchema = new mongoose.Schema({
   commitsToday: { type: Number },
   highStreak: { type: Number },
   lastCommit: { type: Date },
-  lastCheck: { type: Date, required: true }
+  lastCheck: { type: Date, required: true },
+  streakDates: [ { type: Date } ]
 });
+
+// [
+//   { date: value, streak: 1 },
+//   { date: value, streak: 2 }
+// ]
 
 // TODO: Set instance method for user to check if commit hasn't been made, signaling broken streak
 
