@@ -4,6 +4,7 @@
 
 .show {
   display: flex;
+  flex-direction: column;
 }
 
 .hide {
@@ -13,4 +14,8 @@
 .signup-form, .login-form {
   margin: 0 auto;
   margin-top: 1.5em;
+}
+
+.btn-container {
+  
 }
