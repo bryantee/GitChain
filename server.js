@@ -92,7 +92,9 @@ app.post('/users', (req, res) => {
 let username = req.body.username;
 let userObj = {
   username: username,
-  lastCheck: new Date()
+  lastCheck: new Date(),
+  highStreak: 0,
+  currentCommitStreakDays: 0
 };
   // Get initial github data
   // TODO: Get data from GH and build object to store in DB

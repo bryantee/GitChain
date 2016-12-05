@@ -8,74 +8,121 @@ const moment = require('moment');
 function scheduler() {
   console.log('Executing scheduler');
 
-  let updateByUser = function(username, callback) {
+  let updateByUser = function (username, callback) {
     // make each call to github witthh username
-    getGHData(username).then(function(data) {
+    getGHData(username).then(function (data) {
       // console.log(data);
       return data;
-    }).then(function(data) {
-      if (data.today_count === 0) {
-        console.log('No commits for today, setting streak to 0 :(');
+    }).then(function (data) {
 
-        // Params to pass to mongoose update method
-        let query = { username };
-        let update = {
-          $set: {
-            lastCheck: new Date(),
-            commitsToday: data.today_count
-          }
-        };
-        let options = {};
+      ///////////////////////////////////////////////
+      // Get initial info on user currently in DB //
+      /////////////////////////////////////////////
 
-        // update DB
-        User.findOneAndUpdate(query, update, options, (err, result) => {
-          if (err) {
-            return console.log(`ERROR: ${err}`);
-          }
-          console.log(`User ${username} is successfully updated with latest info`);
-          if (callback) callback();
-        });
-
-      } else if (data.today_count !== 0) {
-        console.log('Commits!');
-
-        // update user in db
-        // find user in database and update streak++
-        let query = {
-          username
-        };
-        let update = {
-          $set: {
-            commitsToday: data.today_count,
-            lastCheck: new Date()
-          }
-        };
-
-        if (data.today_count === 0) {
-          update.$set = {
-            currentCommitStreakDays: 0
-          }
-        } else {
-          update.$inc = {
-            currentCommitStreakDays: 1
-          }
+      User.find({ username}, (err, result) => {
+        if (err) {
+          console.log(`Error: ${err}`);
         }
 
-        let options = {};
+        // Establish some variables
 
-        User.findOneAndUpdate(query, update, options, (err, result) => {
-          if (err) {
-            return console.log(`ERROR: ${err}`);
+        let today = moment(); // Get day
+        let twoDaysAgo = moment().subtract(2, 'days'); // Two days ago
+        let streakDates; // Current array of streak dates
+        let lastStreakDate; // Last date with streak increment
+        let lastCheck = result[0].lastCheck; // When was it last checked
+        let highStreak = result[0].highStreak; // High streak
+        let currentStreak = result[0].currentCommitStreakDays; //Current streak
+        console.log(`last check: ${lastCheck}`);
+        console.log(`high streak: ${highStreak}`);
+        console.log(`Currentstreak:${currentStreak}`);
+
+
+        if (result.hasOwnProperty('streakDates')) {
+          streakDates = result.streakDates;
+          lastStreakDate = streakDates[streakDates.length - 1];
+          console.log(`streak dates: ${streakDates}`);
+          console.log(`last streak date: ${lastStreakDate}`);
+        }
+
+        /////////////////////
+        // Makes decisions //
+        ////////////////////
+
+        // If no commits, do a few things and save info to DB
+        if (data.today_count === 0) {
+          console.log('No commits for today, setting streak to 0 :(');
+
+          // Params to pass to mongoose update method
+          let query = {
+            username
+          };
+          let options = {};
+          let update = {
+            $set: {
+              lastCheck: new Date(),
+              commitsToday: data.today_count
+            }
+          };
+
+          // TODO: Add check for time being after 11:55pm
+          //       If so, set streak back to 0. Sorry.
+
+          // update DB
+          User.findOneAndUpdate(query, update, options, (err, result) => {
+            if (err) {
+              return console.log(`ERROR: ${err}`);
+            }
+            console.log(`User ${username} is successfully updated with latest info`);
+            if (callback) callback();
+          });
+
+
+          // If there are commits....
+          // Do some checks and update accordingly
+        } else if (data.today_count !== 0) {
+          console.log('Commits!');
+
+          // update user in db
+          // find user in database and update streak++
+          let query = {
+            username
+          };
+          let update = {
+            $set: {
+              commitsToday: data.today_count,
+              lastCheck: new Date(),
+            }
+          };
+
+          if (currentStreak === 0) {
+            console.log('current streak is zero, setting to 1');
+            update.$set.currentCommitStreakDays = 1;
+            update.$set.highStreak = 1;
+            update.$addToSet = {
+              streakDates: new moment()
+            };
           }
-          console.log(`User ${username} is successfully updated with (${data.today_count}) new commits in db`);
-          if (callback) callback();
-        });
-      }
-    // }).then( data => {
-    //   console.log('updateByUser Resolved!');
-    //   return new Promise( resolve => {
-    //     resolve('resolved');
-    //   });
+
+          // Increment streak and hight streak if needed
+          if (streakDates && lastStreakDate.isBefore(today, 'day') && lastStreakDate.isAfter(twoDaysAgo, 'day')) {
+            update.$inc.currentCommitStreakDays = 1;
+            if ((currentStreak + 1) > highStreak) {
+              update.$inc.highStreak = 1;
+            }
+          }
+
+          let options = {};
+
+          User.findOneAndUpdate(query, update, options, (err, result) => {
+            if (err) {
+              return console.log(`ERROR: ${err}`);
+            }
+            console.log(`User ${username} is successfully updated with (${data.today_count}) new commits in db`);
+            if (callback) callback();
+          });
+        }
+      });
     });
   }
 
@@ -116,40 +163,5 @@ function scheduler() {
   return updateByUser;
 
 }
-
-// TODO: Loop through users and run getGHData on each
-// cron('5 hours', function() {
-//   User.find(
-//     "lastUpdate" : {
-//       $gte:
-//     }
-//   )
-// })
-
-// // setup promise to be used for each request to GH
-// function getGHData(username) {
-//   return new Promise(function(resolve) {
-//     gh.valid_data(username, null, data => {
-//       console.log(`Looking up: ${username}`);
-//       resolve(data);
-//     });
-//   });
-// };
-//
-//
-// // Run test
-// getGHData('ljharb').then(function(data) {
-//   console.log('Inside the promise then function:');
-//   console.log(data);
-//   return data;
-// }).then(function(data) {
-//   if (data.today_count === 0) console.log('No commits for today');
-//   if (data.today_count !== 0) {
-//     console.log('Commits!');
-//     // update user in db
-//     // find user in database and update streak++
-//   }
-// });
-
 
 module.exports = scheduler;
