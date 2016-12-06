@@ -61,8 +61,6 @@ app.use(session({
   secret: 'toast',
   resave: true,
   saveUninitialized: true,
-  // cookie: { secure: false, expires: false }
-  // store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -85,12 +83,9 @@ app.use(function(req, res, next) {
 
 app.post('/user/update/:username', (req, res) => {
   let username = req.body.username;
-  // make updateByUser return a promise
-  // and respond status 200 once resolved
   updateByUser(username, () => {
     res.sendStatus(200);
   });
-  // once resolved, call this -->
 });
 
 app.get('/users/currentUser', (req, res) => {
@@ -210,24 +205,22 @@ app.post('/users', (req, res) => {
 
 // authenticate user
 app.post('/login', passport.authenticate('local'), (req, res) => {
-  console.log('--- /login route -----');
-  console.log(`Request: ${req}`);
-  console.log(`Response: ${res}`);
-  console.log(`Request user: ${req.user}`);
-  console.log(`Response user: ${res.user}`);
-  // console.log({res});
-  // res.redirect('/is-login');
-  return res.status(200).json({
-    username: req.body.username,
-    isAuthenticated: true,
-    res: util.inspect(res),
-    req: util.inspect(req)
-  });
+  if (req.user) {
+    console.log(`Username: ${req.user.username}`);
+    let redirectURL = '/user/' + req.user.username;
+    res.status(200).json({
+      "success": true,
+      "redirect": true,
+      "redirectURL": redirectURL
+    });
+  }
 });
+  // res.redirect('/is-login');
+  // return res.status(200).redirect('/user/' + req.user.username);
 
+
+// pointless endpoint for testing
 app.get('/is-login', (req, res) => {
-  console.log('--- /is-login route -----');
-  console.log(`req.user: ${req.user}`);
   res.status(200).json({
     user: req.user
   });

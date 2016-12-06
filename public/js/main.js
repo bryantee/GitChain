@@ -106,8 +106,6 @@ function eventListeners() {
     console.log('Login button clicked');
     let username = document.querySelector('#login-username').value;
     let password = document.querySelector('#login-password').value;
-    console.log(`username: ${username}`);
-    console.log(`password: ${password}`);
     fetch('/login', {
       method: 'POST',
       body: JSON.stringify({
@@ -119,8 +117,15 @@ function eventListeners() {
     })
     .then( response => {
       if (response.status === 200) {
-        console.log('user logged in');
+        console.log(`User ${username} logged in`);  
+        return response.json();
       }
+    }).then( j => {
+      console.log(j);
+      if (j.redirect) window.location = j.redirectURL;
+      // hide signup & login
+      logInBtn.classList.add('hide');
+      signUpBtn.classList.add('hide');
     });
   });
 
