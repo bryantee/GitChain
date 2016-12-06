@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true 
+    required: true
   },
   avatar: { type: String },
   currentGoal: { type: String },
@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
 // TODO: Set instance method for user to check if commit hasn't been made, signaling broken streak
 
 UserSchema.methods.validatePassword = function(password, callback) {
-  bcrypt.compare(password, this.password, (err, isValid) => {
+  bcrypt.compare(password, this.password, function(err, isValid) {
     if (err) {
       callback(err);
       return;

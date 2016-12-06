@@ -11,6 +11,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const util = require('util');
 // const MongoStore = require('connect-mongo')(session);
 
 // Get models
@@ -20,19 +21,6 @@ let updateByUser;
 
 const app = express();
 app.use(express.static('public'));
-
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.use(session({
-  secret: 'toast',
-  resave: true,
-  saveUninitialized: true,
-  cookie: { secure: false, expires: false }
-  // store: new MongoStore({ mongooseConnection: mongoose.connection })
-}));
-app.use(passport.initialize());
-app.use(passport.session());
 
 passport.use('local', new LocalStrategy(
   function(username, password, done) {
@@ -60,12 +48,24 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log(id);
+  console.log(`id: ${id}`);
   User.findById(id, function(err, user) {
     console.log('deserializeUser');
     done(err, user);
   });
 });
+
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(session({
+  secret: 'toast',
+  resave: true,
+  saveUninitialized: true,
+  // cookie: { secure: false, expires: false }
+  // store: new MongoStore({ mongooseConnection: mongoose.connection })
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(function(req, res, next) {
     console.log('-- session --');
@@ -76,8 +76,6 @@ app.use(function(req, res, next) {
     console.log('-------------');
     console.log('-- signed cookies --');
     console.dir(req.signedCookies);
-    console.log('----Req User----');
-    console.dir(req.user);
     next();
   });
 
@@ -212,14 +210,24 @@ app.post('/users', (req, res) => {
 
 // authenticate user
 app.post('/login', passport.authenticate('local'), (req, res) => {
+  console.log('--- /login route -----');
+  console.log(`Request: ${req}`);
+  console.log(`Response: ${res}`);
+  console.log(`Request user: ${req.user}`);
+  console.log(`Response user: ${res.user}`);
+  // console.log({res});
+  // res.redirect('/is-login');
   return res.status(200).json({
     username: req.body.username,
-    isAuthenticated: true
+    isAuthenticated: true,
+    res: util.inspect(res),
+    req: util.inspect(req)
   });
 });
 
 app.get('/is-login', (req, res) => {
-  console.log(req.user);
+  console.log('--- /is-login route -----');
+  console.log(`req.user: ${req.user}`);
   res.status(200).json({
     user: req.user
   });

@@ -102,6 +102,7 @@ function eventListeners() {
 
   // login submit
   loginBtnSubmit.addEventListener('click', e => {
+    e.preventDefault();
     console.log('Login button clicked');
     let username = document.querySelector('#login-username').value;
     let password = document.querySelector('#login-password').value;
@@ -113,7 +114,8 @@ function eventListeners() {
         username: username,
         password: password
       }),
-      headers: new Headers({ "Content-Type": "application/json"})
+      headers: new Headers({ "Content-Type": "application/json"}),
+      credentials: 'include'
     })
     .then( response => {
       if (response.status === 200) {
