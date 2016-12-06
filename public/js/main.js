@@ -34,6 +34,8 @@ function eventListeners() {
 
   let updateBtn = document.querySelector('#update-btn');
 
+  let loginBtnSubmit = document.querySelector('#login-button');
+
   function resetViews() {
     let views = document.querySelectorAll('.view');
     for (let i = 0; i < views.length; i++ ) {
@@ -96,6 +98,28 @@ function eventListeners() {
     logInView.classList.remove('hide');
     resetTabs();
     logInBtn.classList.add('is-active');
+  });
+
+  // login submit
+  loginBtnSubmit.addEventListener('click', e => {
+    console.log('Login button clicked');
+    let username = document.querySelector('#login-username').value;
+    let password = document.querySelector('#login-password').value;
+    console.log(`username: ${username}`);
+    console.log(`password: ${password}`);
+    fetch('/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        password: password
+      }),
+      headers: new Headers({ "Content-Type": "application/json"})
+    })
+    .then( response => {
+      if (response.status === 200) {
+        console.log('user logged in');
+      }
+    });
   });
 
   // Update info button
