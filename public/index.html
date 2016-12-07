@@ -15,7 +15,7 @@
     </div>
     <div class="nav-right">
       <a href="#" id="profile-btn" class="nav-item is-tab is-active">Profile</a>
-      <a href="#" id="logout-btn" class="nav-item is-tab">Log Out</a>
+      <a href="#" id="logout-btn" class="nav-item is-tab hide">Log Out</a>
       <a href="#" id="signup-btn" class="nav-item is-tab">Signup</a>
       <a href="#" id="login-btn" class="nav-item is-tab">Login</a>
       <a href="#" id="welcome-btn" class="nav-item is-tab">About</a>
@@ -58,23 +58,23 @@
       </div>
     </section>
     <section id="signup-view" class="view hide">
-      <div class="signup-form">
+      <form class="signup-form">
         <label for="" class="label">Github Username</label>
         <p class="control">
-          <input type="text" class="input">
+          <input type="text" id="signup-username" class="input">
         </p>
         <label for="" class="label">Passwword (for GitChain)</label>
         <p class="control">
-          <input type="password" class="input">
+          <input type="password" id="signup-password-1" class="input">
         </p>
         <label for="" class="label">Confirm Password</label>
         <p class="control">
-          <input type="password" class="input">
+          <input type="password" id="signup-password-2" class="input">
         </p>
         <p class="control">
-          <button class="button is-primary">Sign Up</button>
+          <input type="submit" value="Sign Up" id="signup-button" class="button is-primary"/>
         </p>
-      </div>
+      </form>
     </section>
     <section id="login-view" class="view hide">
       <form class="login-form">
