@@ -35,6 +35,9 @@ function eventListeners() {
   let loginBtnSubmit = document.querySelector('#login-button');
   let signupBtnSubmit = document.querySelector('#signup-button');
 
+  // Current goal box for editing
+  let currentGoalText = document.querySelector('.current-goal');
+
   function resetViews() {
     let views = document.querySelectorAll('.view');
     for (let i = 0; i < views.length; i++ ) {
@@ -172,6 +175,31 @@ function eventListeners() {
         updateBtn.classList.remove('is-loading');
       });
   });
+
+  // Current goal editable and update sent to server
+  currentGoalText.addEventListener('dblclick', function() {
+    console.log('goal dbl clicked');
+    this.setAttribute('contentEditable', true);
+  });
+  currentGoalText.addEventListener('blur', (function() {
+    this.setAttribute('contentEditable', false);
+    let newGoal = currentGoalText.textContent;
+    console.log(`New Goal: ${newGoal}`);
+    // Send to server
+    let username = window.location.pathname.split('/')[2];
+    let url = '/users/' + username + '/goal';
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify({ currentGoal: newGoal }),
+      headers: new Headers({ "Content-Type": "application/json" })
+    })
+      .then( response => {
+        return response.json();
+      })
+        .then( response => {
+          currentGoalText.textContent = response.currentGoal;
+        });
+  }));
 
 }
 
