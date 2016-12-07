@@ -15,7 +15,7 @@
     </div>
     <div class="nav-right">
       <a href="#" id="profile-btn" class="nav-item is-tab is-active">Profile</a>
-      <a href="#" id="logout-btn" class="nav-item is-tab">Log Out</a>
+      <a href="#" id="logout-btn" class="nav-item is-tab hide">Log Out</a>
       <a href="#" id="signup-btn" class="nav-item is-tab">Signup</a>
       <a href="#" id="login-btn" class="nav-item is-tab">Login</a>
       <a href="#" id="welcome-btn" class="nav-item is-tab">About</a>
@@ -58,38 +58,38 @@
       </div>
     </section>
     <section id="signup-view" class="view hide">
-      <div class="signup-form">
+      <form class="signup-form">
         <label for="" class="label">Github Username</label>
         <p class="control">
-          <input type="text" class="input">
+          <input type="text" id="signup-username" class="input">
         </p>
         <label for="" class="label">Passwword (for GitChain)</label>
         <p class="control">
-          <input type="password" class="input">
+          <input type="password" id="signup-password-1" class="input">
         </p>
         <label for="" class="label">Confirm Password</label>
         <p class="control">
-          <input type="password" class="input">
+          <input type="password" id="signup-password-2" class="input">
         </p>
         <p class="control">
-          <button class="button is-primary">Sign Up</button>
+          <input type="submit" value="Sign Up" id="signup-button" class="button is-primary"/>
         </p>
-      </div>
+      </form>
     </section>
     <section id="login-view" class="view hide">
-      <div class="login-form">
+      <form class="login-form">
         <label for="" class="label">Username</label>
         <p class="control">
-          <input type="text" class="input">
+          <input type="text" id="login-username" name="username" class="input">
         </p>
         <label for="" class="label">Passwword</label>
         <p class="control">
-          <input type="password" class="input">
+          <input type="password" id="login-password" name="password" class="input">
         </p>
         <p class="control">
-          <button class="button is-primary">Login</button>
+          <input type="submit" value="Login" id="login-button" class="button is-primary" />
         </p>
-      </div>
+      </form>
     </section>
     <section id="welcome-view" class="view hide">Welcome to GitChain. Write code. Commit. Build your chain. Don't break it.</section>
     <section id="logout-view" class="view hide">Logout Page</section>

@@ -19,12 +19,19 @@
     "mocha": "^3.1.2"
   },
   "dependencies": {
+    "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
+    "client-sessions": "^0.7.0",
+    "connect-mongo": "^1.3.2",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.2",
     "github_simplestat": "^6.0.0",
     "moment": "^2.17.0",
     "mongoose": "^4.7.0",
     "node-schedule": "^1.2.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
     "request": "^2.79.0"
   }
 }

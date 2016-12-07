@@ -6,15 +6,76 @@ const config = require('./config');
 const bodyParser = require('body-parser');
 const ghRobot = require('./ghRobot');
 const request = require('request');
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const util = require('util');
+// const MongoStore = require('connect-mongo')(session);
+
+// Get models
+const User = require('./models/user');
 
 let updateByUser;
 
 const app = express();
-app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Get models
-const User = require('./models/user');
+passport.use('local', new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, (err, user) => {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, {message: "Incorrect username"});
+      }
+      user.validatePassword(password, error => {
+        if (err) {
+          return done(null, false, {message: "Incorrect username"});
+        } else {
+          return done(null, user);
+        }
+      });
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  console.log('Serialize');
+  // console.log(`User: ${user}`);
+  console.log(`User id: ${user.id}`);
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  console.log(`id: ${id}`);
+  User.findById(id, function(err, user) {
+    console.log('deserializeUser');
+    done(err, user);
+  });
+});
+
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(session({
+  secret: 'toast',
+  resave: true,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(function(req, res, next) {
+    console.log('-- session --');
+    console.dir(req.session);
+    console.log('-------------');
+    console.log('-- cookies --');
+    console.dir(req.cookies);
+    console.log('-------------');
+    console.log('-- signed cookies --');
+    console.dir(req.signedCookies);
+    next();
+  });
 
 ////////////////////////////
 // Express Routes for API //
@@ -22,12 +83,9 @@ const User = require('./models/user');
 
 app.post('/user/update/:username', (req, res) => {
   let username = req.body.username;
-  // make updateByUser return a promise
-  // and respond status 200 once resolved
   updateByUser(username, () => {
     res.sendStatus(200);
   });
-  // once resolved, call this -->
 });
 
 app.get('/users/currentUser', (req, res) => {
@@ -89,53 +147,89 @@ app.get('/users/:user', (req, res) => {
 
 // signup user
 app.post('/users', (req, res) => {
-let username = req.body.username;
-let userObj = {
-  username: username,
-  lastCheck: new Date(),
-  highStreak: 0,
-  currentCommitStreakDays: 0
-};
-  // Get initial github data
-  // TODO: Get data from GH and build object to store in DB
+  let username = req.body.username.trim();
+  let password = req.body.password.trim();
 
-  const url = "https://api.github.com/users/" + username;
+  bcrypt.genSalt(10, (err, salt) => {
+      if (err) {
+        return console.log(`error: ${err}`);
+      }
+      bcrypt.hash(password, salt, (err, hash) => {
+          if (err) {
+            return console.log(`error: ${err}`);
+          }
 
-  request({
-    url: url,
-    json: true,
-    headers: {
-      'User-Agent': 'javascript'
-    }
-  }, (err, response, body) => {
-    if (err) return console.log(`Error making request to Github: ${err}`);
-    if (response.statusCode !== 200) return console.log(`Status code: ${response.statusCode}`);
-    if (response.statusCode === 200) {
-      // console.log(`Successful response from GH for user: ${username}`);
-      userObj.avatar = body.avatar_url;
-      // Can get more info here in the future
-      // But for now only care about avatar_url
+          let userObj = {
+            username: username,
+            password: hash,
+            lastCheck: new Date(),
+            highStreak: 0,
+            currentCommitStreakDays: 0
+          };
 
-      User.create(userObj, (err, result) => {
-        if (err) {
-          return res.status(500).json({
-            message: 'Internal server error'
-          });
-        }
-        res.status(201).json(result);
+          // Get initial github data
+          // TODO: Get data from GH and build object to store in DB
+
+          const url = "https://api.github.com/users/" + username;
+
+          request({
+            url: url,
+            json: true,
+            headers: {
+              'User-Agent': 'javascript'
+            }
+          }, (err, response, body) => {
+            if (err) return console.log(`Error making request to Github: ${err}`);
+            if (response.statusCode !== 200) return console.log(`Status code: ${response.statusCode}`);
+            if (response.statusCode === 200) {
+              // console.log(`Successful response from GH for user: ${username}`);
+              userObj.avatar = body.avatar_url;
+              // Can get more info here in the future
+              // But for now only care about avatar_url
+
+              User.create(userObj, (err, result) => {
+                if (err) {
+                  return res.status(500).json({
+                    message: 'Internal server error'
+                  });
+                }
+
+                result['password'] = 'PROTECTED';
+                res.status(201).json(result);
+              });
+            }
+          })
+        });
       });
-    }
-  })
-});
+  });
 
 // authenticate user
-app.post('/session', (req, res) => {
+app.post('/login', passport.authenticate('local'), (req, res) => {
+  if (req.user) {
+    console.log(`Username: ${req.user.username}`);
+    let redirectURL = '/user/' + req.user.username;
+    res.status(200).json({
+      "success": true,
+      "redirect": true,
+      "redirectURL": redirectURL
+    });
+  }
+});
+  // res.redirect('/is-login');
+  // return res.status(200).redirect('/user/' + req.user.username);
 
+
+// pointless endpoint for testing
+app.get('/is-login', (req, res) => {
+  res.status(200).json({
+    user: req.user
+  });
 });
 
 // logout user
-app.delete('/session', (req, res) => {
-
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/')
 });
 
 // Get all users (for testing purposes)

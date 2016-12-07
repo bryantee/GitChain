@@ -19,6 +19,7 @@ describe('GitChain API', () => {
       User.create(
         {
           username: 'jason-voorhees',
+          password: '123',
           avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
           currentGoal: 'MURDERRR.',
           currentCommitStreakDays: 5,
@@ -29,6 +30,7 @@ describe('GitChain API', () => {
         },
         {
           username: 'freddy-krueger',
+          password: '123',
           avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
           currentGoal: 'Slice children faces off',
           currentCommitStreakDays: 10,
@@ -108,7 +110,7 @@ describe('GitChain API', () => {
   it('should add new user to db on POST to "/users" w valid JSON', done => {
     chai.request(app)
       .post('/users')
-      .send({ 'username': 'norman-bates' })
+      .send({ 'username': 'norman-bates', 'password': '123' })
       .end((err, res) => {
         res.should.have.status(201);
         res.should.be.json;
