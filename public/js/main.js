@@ -31,8 +31,12 @@ function eventListeners() {
   let logInBtn = document.querySelector('#login-btn');
   let welcomeBtn = document.querySelector('#welcome-btn');
   let logoutBtn = document.querySelector('#logout-btn');
-
   let updateBtn = document.querySelector('#update-btn');
+  let loginBtnSubmit = document.querySelector('#login-button');
+  let signupBtnSubmit = document.querySelector('#signup-button');
+
+  // Current goal box for editing
+  let currentGoalText = document.querySelector('.current-goal');
 
   function resetViews() {
     let views = document.querySelectorAll('.view');
@@ -98,7 +102,61 @@ function eventListeners() {
     logInBtn.classList.add('is-active');
   });
 
-  // Update info button
+  // signup submit event
+  signupBtnSubmit.addEventListener('click', e => {
+    e.preventDefault();
+    console.log('Signup button clicked');
+    let username = document.querySelector('#signup-username').value.trim();
+    let password1 = document.querySelector('#signup-password-1').value.trim();
+    let password2 = document.querySelector('#signup-password-2').value.trim();
+
+    // TODO: Flash real message to user
+    if (password1 !== password2) return console.log("Passwords don't match")
+
+    fetch('/users', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        password: password1
+      }),
+      headers: new Headers({ "Content-Type": "application/json"})
+    }).then( response => {
+      if (response.status === 201) {
+        console.log(`User ${username} succesfully created`);
+      }
+    })
+  });
+
+  // login submit event
+  loginBtnSubmit.addEventListener('click', e => {
+    e.preventDefault();
+    console.log('Login button clicked');
+    let username = document.querySelector('#login-username').value;
+    let password = document.querySelector('#login-password').value;
+    fetch('/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        password: password
+      }),
+      headers: new Headers({ "Content-Type": "application/json"}),
+      credentials: 'include'
+    })
+    .then( response => {
+      if (response.status === 200) {
+        console.log(`User ${username} logged in`);
+        return response.json();
+      }
+    }).then( j => {
+      console.log(j);
+      if (j.redirect) window.location = j.redirectURL;
+      // hide signup & login
+      logInBtn.classList.add('hide');
+      signUpBtn.classList.add('hide');
+    });
+  });
+
+  // Update info button event
   updateBtn.addEventListener('click', e => {
     updateBtn.classList.add('is-loading');
     let username = window.location.pathname.split('/')[2];
@@ -117,6 +175,31 @@ function eventListeners() {
         updateBtn.classList.remove('is-loading');
       });
   });
+
+  // Current goal editable and update sent to server
+  currentGoalText.addEventListener('dblclick', function() {
+    console.log('goal dbl clicked');
+    this.setAttribute('contentEditable', true);
+  });
+  currentGoalText.addEventListener('blur', (function() {
+    this.setAttribute('contentEditable', false);
+    let newGoal = currentGoalText.textContent;
+    console.log(`New Goal: ${newGoal}`);
+    // Send to server
+    let username = window.location.pathname.split('/')[2];
+    let url = '/users/' + username + '/goal';
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify({ currentGoal: newGoal }),
+      headers: new Headers({ "Content-Type": "application/json" })
+    })
+      .then( response => {
+        return response.json();
+      })
+        .then( response => {
+          currentGoalText.textContent = response.currentGoal;
+        });
+  }));
 
 }
 
