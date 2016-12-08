@@ -217,8 +217,6 @@ app.post('/login', passport.authenticate('local'), (req, res) => {
     let redirectURL = '/user/' + req.user.username;
     res.status(200).json({
       "success": true,
-      "redirect": true,
-      "redirectURL": redirectURL
     });
   }
 });

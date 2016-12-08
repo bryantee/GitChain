@@ -162,8 +162,11 @@ function eventListeners() {
       // call main render function
       main(username);
 
+      resetTabs()
       logInBtn.classList.add('hide');
       signUpBtn.classList.add('hide');
+      profileBtn.classList.add('is-active');
+      profileBtn.classList.remove('hide');
 
       // take to profile view
       profileBtn.classList.remove('hide');
@@ -172,6 +175,32 @@ function eventListeners() {
       profileView.classList.add('show');
       logoutBtn.classList.remove('hide');
       logoutBtn.classList.add('show');
+
+      let editSelect = ('ontouchstart' in window) ? 'click' : 'dblclick';
+
+      // Current goal editable and update sent to server
+      currentGoalText.addEventListener(editSelect, function() {
+        console.log('goal dbl clicked');
+        this.setAttribute('contentEditable', true);
+      });
+      currentGoalText.addEventListener('blur', (function() {
+        this.setAttribute('contentEditable', false);
+        let newGoal = currentGoalText.textContent;
+        // Send to server
+        let url = '/users/' + username + '/goal';
+        fetch(url, {
+          method: 'PUT',
+          body: JSON.stringify({ currentGoal: newGoal }),
+          headers: new Headers({ "Content-Type": "application/json" })
+        })
+          .then( response => {
+            return response.json();
+          })
+            .then( response => {
+              console.log(`New Goal: ${newGoal}`);
+              currentGoalText.textContent = response.currentGoal;
+            });
+      }));
 
       // Update info button event
       updateBtn.addEventListener('click', e => {
@@ -194,32 +223,6 @@ function eventListeners() {
 
     });
   });
-
-
-  // Current goal editable and update sent to server
-  currentGoalText.addEventListener('dblclick', function() {
-    console.log('goal dbl clicked');
-    this.setAttribute('contentEditable', true);
-  });
-  currentGoalText.addEventListener('blur', (function() {
-    this.setAttribute('contentEditable', false);
-    let newGoal = currentGoalText.textContent;
-    console.log(`New Goal: ${newGoal}`);
-    // Send to server
-    let username = window.location.pathname.split('/')[2];
-    let url = '/users/' + username + '/goal';
-    fetch(url, {
-      method: 'PUT',
-      body: JSON.stringify({ currentGoal: newGoal }),
-      headers: new Headers({ "Content-Type": "application/json" })
-    })
-      .then( response => {
-        return response.json();
-      })
-        .then( response => {
-          currentGoalText.textContent = response.currentGoal;
-        });
-  }));
 
 }
 
