@@ -18,7 +18,10 @@ const UserSchema = new mongoose.Schema({
   highStreak: { type: Number },
   lastCommit: { type: Date },
   lastCheck: { type: Date, required: true },
-  streakDates: [ Date ]
+  streakDates: [ Date ],
+  bio: { type: String },
+  url: { type: String },
+  location: { type: String }
 });
 
 // [

@@ -65,17 +65,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(function(req, res, next) {
-    console.log('-- session --');
-    console.dir(req.session);
-    console.log('-------------');
-    console.log('-- cookies --');
-    console.dir(req.cookies);
-    console.log('-------------');
-    console.log('-- signed cookies --');
-    console.dir(req.signedCookies);
-    next();
-  });
+// app.use(function(req, res, next) {
+//     console.log('-- session --');
+//     console.dir(req.session);
+//     console.log('-------------');
+//     console.log('-- cookies --');
+//     console.dir(req.cookies);
+//     console.log('-------------');
+//     console.log('-- signed cookies --');
+//     console.dir(req.signedCookies);
+//     next();
+//   });
 
 ////////////////////////////
 // Express Routes for API //
@@ -164,7 +164,8 @@ app.post('/users', (req, res) => {
             password: hash,
             lastCheck: new Date(),
             highStreak: 0,
-            currentCommitStreakDays: 0
+            currentCommitStreakDays: 0,
+            currentGoal: "Double click here to set your goal for the moment."
           };
 
           // Get initial github data
@@ -184,8 +185,14 @@ app.post('/users', (req, res) => {
             if (response.statusCode === 200) {
               // console.log(`Successful response from GH for user: ${username}`);
               userObj.avatar = body.avatar_url;
+              userObj.url = body.url;
+              userObj.bio = body.bio;
+              userObj.location = body.location;
+
               // Can get more info here in the future
               // But for now only care about avatar_url
+
+              console.log(userObj);
 
               User.create(userObj, (err, result) => {
                 if (err) {

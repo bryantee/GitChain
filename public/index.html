@@ -26,6 +26,29 @@
   <section class="main container">
     <section id="profile-view" class="view show">
       <div class="tile is-ancestor">
+        <div class="tile is-5 is-parent is-vertical">
+          <div class="tile is-child box">
+            <p class="heading">User</p>
+            <article class="media">
+              <div class="media-left">
+                <figure class="image is-128x128">
+                  <img class="avatar" src="" alt="">
+                </figure>
+              </div>
+              <div class="media-content">
+                <div class="content">
+                  <p class="username title is-5"></p>
+                  <p class="bio">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
+                  <p class="location">Nashville, TN</p>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="tile is-child box">
+            <p class="heading">Current Goal <i class="fa fa-pencil"></i></p>
+            <p class="content is-medium current-goal"></p>
+          </div>
+        </div>
         <div class="tile is-4 is-parent is-vertical has-text-centered">
           <div class="tile is-child box">
             <p class="heading">Commit Streak</p>
@@ -38,19 +61,6 @@
           <div class="tile is-child box">
             <p class="heading">Highest Streak</p>
             <p class="title high-streak"></p>
-          </div>
-        </div>
-        <div class="tile is-parent is-vertical">
-          <div class="tile is-child box">
-            <p class="heading">User</p>
-            <p class="title username"></p>
-            <figure class="image is-128x128">
-              <img class="avatar" src="" alt="">
-            </figure>
-          </div>
-          <div class="tile is-child box">
-            <p class="heading">Current Goal <i class="fa fa-pencil"></i></p>
-            <p class="content is-medium current-goal"></p>
           </div>
         </div>
       </div>

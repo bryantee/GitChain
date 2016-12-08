@@ -232,6 +232,9 @@ function main() {
     let commitStreak = document.querySelector('.commit-streak');
     let commitsToday = document.querySelector('.commits-today');
     let highStreak = document.querySelector('.high-streak');
+    let bio = document.querySelector('.bio');
+    let location = document.querySelector('.location');
+    // let url = document.querySelector('.url');
 
     username.textContent = data.username;
     avatar.src = data.avatar;
@@ -239,6 +242,9 @@ function main() {
     commitStreak.textContent = data.currentCommitStreakDays;
     commitsToday.textContent = data.commitsToday;
     highStreak.textContent = data.highStreak;
+    bio.textContent = data.bio;
+    location.textContent = data.location;
+
   }
 
   // Combines AJAX and render functions
