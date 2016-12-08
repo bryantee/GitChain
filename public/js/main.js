@@ -173,8 +173,10 @@ function eventListeners() {
       logoutBtn.classList.remove('hide');
       logoutBtn.classList.add('show');
 
+      let editSelect = ('ontouchstart' in window) ? 'click' : 'dblclick';
+
       // Current goal editable and update sent to server
-      currentGoalText.addEventListener('dblclick', function() {
+      currentGoalText.addEventListener(editSelect, function() {
         console.log('goal dbl clicked');
         this.setAttribute('contentEditable', true);
       });
