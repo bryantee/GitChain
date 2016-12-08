@@ -2,7 +2,7 @@
 
 // look ma, no jQuery
 document.addEventListener('DOMContentLoaded', e => {
-  main();
+  // main();
   eventListeners();
 });
 
@@ -149,10 +149,23 @@ function eventListeners() {
       }
     }).then( j => {
       console.log(j);
-      if (j.redirect) window.location = j.redirectURL;
+      // if (j.redirect) window.location = j.redirectURL;
       // hide signup & login
+
+      // call main render function
+      main(username);
+
       logInBtn.classList.add('hide');
       signUpBtn.classList.add('hide');
+
+      // take to profile view
+      profileBtn.classList.remove('hide');
+      resetViews();
+      profileView.classList.remove('hide');
+      profileView.classList.add('show');
+      logoutBtn.classList.remove('hide');
+      logoutBtn.classList.add('show');
+
     });
   });
 
@@ -204,7 +217,7 @@ function eventListeners() {
 }
 
 // Main function to call in "document ready"
-function main() {
+function main(username) {
   console.log('Main called');
 
   // This is currently mocked up with timeout
@@ -248,11 +261,11 @@ function main() {
   }
 
   // Combines AJAX and render functions
-  function getAndDisplayData(){
-    let username = window.location.pathname.split('/')[2];
+  function getAndDisplayData(username){
+    // let username = window.location.pathname.split('/')[2];
     getData(displayData, username);
   }
 
   // Makes the call
-  getAndDisplayData();
+  getAndDisplayData(username);
 }
