@@ -65,8 +65,11 @@ function scheduler() {
             }
           };
 
-          // TODO: Add check for time being after 11:55pm
-          //       If so, set streak back to 0. Sorry.
+          // Add check for time being after 11:55pm
+          // If so, set streak back to 0. Sorry.
+          if ( moment().isAfter.moment('23:55', 'HH:mm') ) {
+            update.$set.currentCommitStreakDays = 0;
+          }
 
           // update DB
           User.findOneAndUpdate(query, update, options, (err, result) => {
@@ -151,11 +154,10 @@ function scheduler() {
 
   }
 
-  // TODO: Setup cron scheduler
   // Cront scheuler
   let rule = new schedule.RecurrenceRule();
-  rule.second = 59;
-  rule.minute = 59;
+  rule.second = 01;
+  rule.minute = 58;
   rule.hour = 23;
 
   schedule.scheduleJob(rule, loopThroughUsers);
