@@ -12,11 +12,12 @@ const LocalStrategy = require('passport-local').Strategy;
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const util = require('util');
-// const MongoStore = require('connect-mongo')(session);
 
 // Get models
 const User = require('./models/user');
 
+// Declare global so function can be
+// used throughout after import
 let updateByUser;
 
 const app = express();
@@ -65,31 +66,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// app.use(function(req, res, next) {
-//     console.log('-- session --');
-//     console.dir(req.session);
-//     console.log('-------------');
-//     console.log('-- cookies --');
-//     console.dir(req.cookies);
-//     console.log('-------------');
-//     console.log('-- signed cookies --');
-//     console.dir(req.signedCookies);
-//     next();
-//   });
-
 ////////////////////////////
 // Express Routes for API //
 ////////////////////////////
 
+// Request update to github commit info
+// returns 200 to let client know db update complete
 app.post('/user/update/:username', (req, res) => {
   let username = req.body.username;
   updateByUser(username, () => {
     res.sendStatus(200);
   });
-});
-
-app.get('/users/currentUser', (req, res) => {
-  res.json(req[user]);
 });
 
 // Updating Goal for user
@@ -110,9 +97,7 @@ app.put('/users/:user/goal', (req, res) => {
     }
   };
 
-  let options = {};
-
-  User.findOneAndUpdate(query, update, options, (err, result) => {
+  User.findOneAndUpdate(query, update, {}, (err, result) => {
     if (!result) {
         return res.status(404).send('No matching user: ' + user);
     } else if (err) {
@@ -138,9 +123,8 @@ app.get('/users/:user', (req, res) => {
       return res.status(500).send('Error: ', err);
     }
 
-    // Return json identical from User schema in DB
-    // Is this smart? OR should I always repackage it here
-    // before sending?
+    // TODO: repackage object literal to deliver to client
+    //       ex: object includes password (hashed)
     res.status(200).json(result);
   });
 });
@@ -168,9 +152,6 @@ app.post('/users', (req, res) => {
             currentGoal: "Double click here to set your goal for the moment."
           };
 
-          // Get initial github data
-          // TODO: Get data from GH and build object to store in DB
-
           const url = "https://api.github.com/users/" + username;
 
           request({
@@ -183,16 +164,10 @@ app.post('/users', (req, res) => {
             if (err) return console.log(`Error making request to Github: ${err}`);
             if (response.statusCode !== 200) return console.log(`Status code: ${response.statusCode}`);
             if (response.statusCode === 200) {
-              // console.log(`Successful response from GH for user: ${username}`);
               userObj.avatar = body.avatar_url;
               userObj.url = body.url;
               userObj.bio = body.bio;
               userObj.location = body.location;
-
-              // Can get more info here in the future
-              // But for now only care about avatar_url
-
-              console.log(userObj);
 
               User.create(userObj, (err, result) => {
                 if (err) {
@@ -220,11 +195,9 @@ app.post('/login', passport.authenticate('local'), (req, res) => {
     });
   }
 });
-  // res.redirect('/is-login');
-  // return res.status(200).redirect('/user/' + req.user.username);
-
 
 // pointless endpoint for testing
+// will keep in for future tests
 app.get('/is-login', (req, res) => {
   res.status(200).json({
     user: req.user
@@ -245,7 +218,6 @@ app.get('/users', (req, res) => {
         message: 'Internal server error'
       });
     }
-    // console.log(users);
     res.status(200).json(users);
   });
 });
@@ -268,7 +240,6 @@ const runServer = function(callback) {
     console.log(`Connected to db at ${config.DATABASE_URL}`);
 
     app.listen(config.PORT, () => {
-      console.log(`Listening on port ${config.PORT}`);
       if (callback) {
         callback();
       }

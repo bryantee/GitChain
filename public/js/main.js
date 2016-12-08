@@ -1,24 +1,11 @@
 'use strict';
 
 // look ma, no jQuery
+// Just setup some basic event listeners in 'document.ready()'
+// main() is called to pull in data and render to profile page
 document.addEventListener('DOMContentLoaded', e => {
-  // main();
   eventListeners();
 });
-
-const APP_STATE = {
-  username: null
-};
-
-// Object for all mock data during client mockup phase
-// const MOCK_DATA = {
-//   username: 'bryantee',
-//   avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
-//   currentGoal: 'Finish mocking out API response for client.',
-//   currentCommitStreakDays: 5,
-//   commitsToday: 1,
-//   highStreak: 15
-// }
 
 function eventListeners() {
 
@@ -109,7 +96,6 @@ function eventListeners() {
   // signup submit event
   signupBtnSubmit.addEventListener('click', e => {
     e.preventDefault();
-    console.log('Signup button clicked');
     let username = document.querySelector('#signup-username').value.trim();
     let password1 = document.querySelector('#signup-password-1').value.trim();
     let password2 = document.querySelector('#signup-password-2').value.trim();
@@ -126,11 +112,10 @@ function eventListeners() {
       headers: new Headers({ "Content-Type": "application/json"})
     }).then( response => {
       if (response.status === 201) {
-        console.log(`User ${username} succesfully created`);
+        resetViews();
+        logInView.classList.remove('hide');
+        logInView.classList.add('show');
       }
-      resetViews();
-      logInView.classList.remove('hide');
-      logInView.classList.add('show');
     })
   });
 
@@ -151,17 +136,12 @@ function eventListeners() {
     })
     .then( response => {
       if (response.status === 200) {
-        console.log(`User ${username} logged in`);
         return response.json();
       }
     }).then( j => {
       console.log(j);
-      // if (j.redirect) window.location = j.redirectURL;
-      // hide signup & login
-
       // call main render function
       main(username);
-
       resetTabs()
       logInBtn.classList.add('hide');
       signUpBtn.classList.add('hide');
@@ -176,11 +156,11 @@ function eventListeners() {
       logoutBtn.classList.remove('hide');
       logoutBtn.classList.add('show');
 
+      // feature detection for mobile view
       let editSelect = ('ontouchstart' in window) ? 'click' : 'dblclick';
 
       // Current goal editable and update sent to server
       currentGoalText.addEventListener(editSelect, function() {
-        console.log('goal dbl clicked');
         this.setAttribute('contentEditable', true);
       });
       currentGoalText.addEventListener('blur', (function() {
@@ -197,7 +177,6 @@ function eventListeners() {
             return response.json();
           })
             .then( response => {
-              console.log(`New Goal: ${newGoal}`);
               currentGoalText.textContent = response.currentGoal;
             });
       }));
@@ -212,7 +191,6 @@ function eventListeners() {
           headers: new Headers({ "Content-Type": "application/json"})
         })
           .then(response => {
-            console.log(response);
             if (response.status === 200) {
               main(username);
             };
@@ -228,14 +206,9 @@ function eventListeners() {
 
 // Main function to call in "document ready"
 function main(username) {
-  console.log('Main called');
 
-  // This is currently mocked up with timeout
-  // But will be replaced with an AJAX call to backend once complete
+  // Gets data from backend for authenticated user
   function getData(callback, username) {
-    // setTimeout(function(){
-    //   callback(MOCK_DATA)
-    // }, 1000);
     let url = '/users/' + username;
     fetch(url)
       .then(response => {
@@ -248,7 +221,6 @@ function main(username) {
 
   // Takes response from AJAX to render data on page
   function displayData(data) {
-    console.log(data);
     let username = document.querySelector('.username');
     let avatar = document.querySelector('.avatar');
     let goal = document.querySelector('.current-goal');
@@ -257,7 +229,7 @@ function main(username) {
     let highStreak = document.querySelector('.high-streak');
     let bio = document.querySelector('.bio');
     let location = document.querySelector('.location');
-    // let url = document.querySelector('.url');
+    // TODO: use URL to make it easy to get to user GH page
 
     username.textContent = data.username;
     avatar.src = data.avatar;
@@ -267,12 +239,10 @@ function main(username) {
     highStreak.textContent = data.highStreak;
     bio.textContent = data.bio;
     location.textContent = data.location;
-
   }
 
   // Combines AJAX and render functions
   function getAndDisplayData(username){
-    // let username = window.location.pathname.split('/')[2];
     getData(displayData, username);
   }
 
