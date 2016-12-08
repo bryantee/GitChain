@@ -162,8 +162,11 @@ function eventListeners() {
       // call main render function
       main(username);
 
+      resetTabs()
       logInBtn.classList.add('hide');
       signUpBtn.classList.add('hide');
+      profileBtn.classList.add('is-active');
+      profileBtn.classList.remove('hide');
 
       // take to profile view
       profileBtn.classList.remove('hide');
