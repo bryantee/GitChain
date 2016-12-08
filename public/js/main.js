@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', e => {
   eventListeners();
 });
 
+const APP_STATE = {
+  username: null
+};
+
 // Object for all mock data during client mockup phase
 // const MOCK_DATA = {
 //   username: 'bryantee',
@@ -124,6 +128,9 @@ function eventListeners() {
       if (response.status === 201) {
         console.log(`User ${username} succesfully created`);
       }
+      resetViews();
+      logInView.classList.remove('hide');
+      logInView.classList.add('show');
     })
   });
 
@@ -166,28 +173,28 @@ function eventListeners() {
       logoutBtn.classList.remove('hide');
       logoutBtn.classList.add('show');
 
+      // Update info button event
+      updateBtn.addEventListener('click', e => {
+        updateBtn.classList.add('is-loading');
+        let url = '/user/update/' + username;
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({ username: username }),
+          headers: new Headers({ "Content-Type": "application/json"})
+        })
+          .then(response => {
+            console.log(response);
+            if (response.status === 200) {
+              main(username);
+            };
+            // remove loading animation
+            updateBtn.classList.remove('is-loading');
+          });
+      });
+
     });
   });
 
-  // Update info button event
-  updateBtn.addEventListener('click', e => {
-    updateBtn.classList.add('is-loading');
-    let username = window.location.pathname.split('/')[2];
-    let url = '/user/update/' + username;
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({ username: username }),
-      headers: new Headers({ "Content-Type": "application/json"})
-    })
-      .then(response => {
-        console.log(response);
-        if (response.status === 200) {
-          main();
-        };
-        // remove loading animation
-        updateBtn.classList.remove('is-loading');
-      });
-  });
 
   // Current goal editable and update sent to server
   currentGoalText.addEventListener('dblclick', function() {
