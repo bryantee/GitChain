@@ -173,6 +173,30 @@ function eventListeners() {
       logoutBtn.classList.remove('hide');
       logoutBtn.classList.add('show');
 
+      // Current goal editable and update sent to server
+      currentGoalText.addEventListener('dblclick', function() {
+        console.log('goal dbl clicked');
+        this.setAttribute('contentEditable', true);
+      });
+      currentGoalText.addEventListener('blur', (function() {
+        this.setAttribute('contentEditable', false);
+        let newGoal = currentGoalText.textContent;
+        // Send to server
+        let url = '/users/' + username + '/goal';
+        fetch(url, {
+          method: 'PUT',
+          body: JSON.stringify({ currentGoal: newGoal }),
+          headers: new Headers({ "Content-Type": "application/json" })
+        })
+          .then( response => {
+            return response.json();
+          })
+            .then( response => {
+              console.log(`New Goal: ${newGoal}`);
+              currentGoalText.textContent = response.currentGoal;
+            });
+      }));
+
       // Update info button event
       updateBtn.addEventListener('click', e => {
         updateBtn.classList.add('is-loading');
@@ -194,32 +218,6 @@ function eventListeners() {
 
     });
   });
-
-
-  // Current goal editable and update sent to server
-  currentGoalText.addEventListener('dblclick', function() {
-    console.log('goal dbl clicked');
-    this.setAttribute('contentEditable', true);
-  });
-  currentGoalText.addEventListener('blur', (function() {
-    this.setAttribute('contentEditable', false);
-    let newGoal = currentGoalText.textContent;
-    console.log(`New Goal: ${newGoal}`);
-    // Send to server
-    let username = window.location.pathname.split('/')[2];
-    let url = '/users/' + username + '/goal';
-    fetch(url, {
-      method: 'PUT',
-      body: JSON.stringify({ currentGoal: newGoal }),
-      headers: new Headers({ "Content-Type": "application/json" })
-    })
-      .then( response => {
-        return response.json();
-      })
-        .then( response => {
-          currentGoalText.textContent = response.currentGoal;
-        });
-  }));
 
 }
 
