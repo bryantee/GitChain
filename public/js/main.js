@@ -73,6 +73,9 @@ function eventListeners() {
     logoutView.classList.remove('hide');
     resetTabs();
     logoutBtn.classList.add('is-active');
+
+    // hit endpoint with logout
+    fetch('/logout', {});
   });
 
   // signup
@@ -201,7 +204,6 @@ function eventListeners() {
 
     });
   });
-
 }
 
 // Main function to call in "document ready"

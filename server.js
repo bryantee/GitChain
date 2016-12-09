@@ -207,7 +207,7 @@ app.get('/is-login', (req, res) => {
 // logout user
 app.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/')
+  res.status(401).redirect('/');
 });
 
 // Get all users (for testing purposes)
