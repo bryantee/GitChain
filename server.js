@@ -125,6 +125,7 @@ app.get('/users/:user', (req, res) => {
 
     // TODO: repackage object literal to deliver to client
     //       ex: object includes password (hashed)
+    result['password'] = 'PRIVATE';
     res.status(200).json(result);
   });
 });
