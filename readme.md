@@ -14,17 +14,24 @@ This is a programmer's take on building the chain. It monitors a user's GitHub a
 
 You will need to use your GitHub username when you sign up for this to work. But don't worry, you can select any random throw away password as this will not be authenticating with GitHub, but rather consuming from the public API. Each day, at the end of the day, GitChain will automagically check to see if you have commits. If you'd like, you can visit at any point in time during the day and run the update which will fetch up-to-date commit data for your account and store it in the GC database. That's it!
 
+If you would like to try running it yourself, make sure you have mongo running and then:
+
+```
+$ npm install
+$ npm start
+```
+
 ## Packages and Other Tech used
 
 - Node.js
 - Express
 - MongoDB / Mongoose
-- Bcrypt.js
-- Passport.js
-- Moment.js
+- [Bcrypt.js](https://www.npmjs.com/package/bcryptjs)
+- [Passport.js](https://www.npmjs.com/package/passport)
+- [Moment.js](https://www.npmjs.com/package/moment)
 - [github_simplestat](https://www.npmjs.com/package/github_simplestat)
-- Request
-- bodyParser
+- [Request](https://www.npmjs.com/package/request)
+- [bodyParser](https://www.npmjs.com/package/body-parser)
 - And a few other awesome 3rd party Packages on the backend
 
 The front end is written in plain vanilla JS with no frameworks or libraries. I'm using [Bulma.io](http://bulma.io/), an awesome CSS framework based on Flexbox for styling and layout. It's being hosted on Heroku and my db is hosted on [mLab](https://mlab.com/).
