@@ -24,11 +24,6 @@ const UserSchema = new mongoose.Schema({
   location: { type: String }
 });
 
-// [
-//   { date: value, streak: 1 },
-//   { date: value, streak: 2 }
-// ]
-
 // TODO: Set instance method for user to check if commit hasn't been made, signaling broken streak
 
 UserSchema.methods.validatePassword = function(password, callback) {

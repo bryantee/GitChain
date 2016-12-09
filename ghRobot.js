@@ -65,9 +65,13 @@ function scheduler() {
             }
           };
 
-          // TODO: Add check for time being after 11:55pm
-          //       If so, set streak back to 0. Sorry.
+          // Add check for time being after 11:55pm
+          // If so, set streak back to 0. Sorry.
+          if ( moment().isAfter.moment('23:55', 'HH:mm') ) {
+            update.$set.currentCommitStreakDays = 0;
+          }
 
+          // TODO: Refactor to make this happen once after if / else statements
           // update DB
           User.findOneAndUpdate(query, update, options, (err, result) => {
             if (err) {
@@ -76,7 +80,6 @@ function scheduler() {
             console.log(`User ${username} is successfully updated with latest info`);
             if (callback) callback();
           });
-
 
           // If there are commits....
           // Do some checks and update accordingly
@@ -112,9 +115,7 @@ function scheduler() {
             }
           }
 
-          let options = {};
-
-          User.findOneAndUpdate(query, update, options, (err, result) => {
+          User.findOneAndUpdate(query, update, {}, (err, result) => {
             if (err) {
               return console.log(`ERROR: ${err}`);
             }
@@ -143,23 +144,21 @@ function scheduler() {
     User.find((err, users) => {
       if (err) console.log(`Error: ${err}`);
       for (let i = 0; i < users.length; i++) {
-        let username = users[i].username;
-
-        updateByUser(username);
+        updateByUser(users[i].username);
       }
     });
-
   }
 
-  // TODO: Setup cron scheduler
-  // Cront scheuler
+  // Cron scheuler
   let rule = new schedule.RecurrenceRule();
-  rule.second = 59;
-  rule.minute = 59;
+  rule.second = 01;
+  rule.minute = 58;
   rule.hour = 23;
 
+  // kick off job scheduler
   schedule.scheduleJob(rule, loopThroughUsers);
 
+  // return this function to be used in server.js endpoints
   return updateByUser;
 
 }
