@@ -1,5 +1,7 @@
 # GitChain
 
+[![Build Status](https://travis-ci.org/bryantee/GitChain.svg?branch=master)](https://travis-ci.org/bryantee/GitChain)
+
 ## Introduction
 
 GitChain is inspired by the real life model that comedian Jerry Seinfeld used to motivate himself to write jokes. He committed himself to writing jokes each and every day, and additionally marking a large calendar with a big X for each day that he wrote. He called this building your chain and the only thing you had to do was not break it.
