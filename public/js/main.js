@@ -25,6 +25,7 @@ function eventListeners() {
   let updateBtn = document.querySelector('#update-btn');
   let loginBtnSubmit = document.querySelector('#login-button');
   let signupBtnSubmit = document.querySelector('#signup-button');
+  let hamburger = document.querySelector('.nav-toggle')
 
   // Current goal box for editing
   let currentGoalText = document.querySelector('.current-goal');
@@ -94,6 +95,12 @@ function eventListeners() {
     logInView.classList.remove('hide');
     resetTabs();
     logInBtn.classList.add('is-active');
+  });
+
+  // mobile nav toggle
+  hamburger.addEventListener('click', () => {
+    let nav = document.querySelector('.nav-menu');
+    nav.classList.toggle('is-active');
   });
 
   // signup submit event
