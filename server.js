@@ -23,6 +23,17 @@ let updateByUser;
 const app = express();
 app.use(express.static('public'));
 
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(session({
+  secret: 'toast',
+  resave: true,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 passport.use('local', new LocalStrategy(
   function(username, password, done) {
     User.findOne({ username: username }, (err, user) => {
@@ -51,20 +62,18 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) {
   console.log(`id: ${id}`);
   User.findById(id, function(err, user) {
-    console.log('deserializeUser');
+    console.log('deserializeUser', err);
     done(err, user);
   });
 });
 
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(session({
-  secret: 'toast',
-  resave: true,
-  saveUninitialized: true,
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+function isAuthenticated(req, res, next) {
+  console.log(req.user);
+  if (req.user && req.user._id) {
+    return next();
+  }
+  res.sendStatus(403);
+}
 
 ////////////////////////////
 // Express Routes for API //
@@ -72,8 +81,8 @@ app.use(passport.session());
 
 // Request update to github commit info
 // returns 200 to let client know db update complete
-app.post('/user/update/:username', (req, res) => {
-  let username = req.body.username;
+app.post('/user/update/:username', isAuthenticated, (req, res) => {
+  let username = req.user.username;
   updateByUser(username, () => {
     res.sendStatus(200);
   });
@@ -82,9 +91,15 @@ app.post('/user/update/:username', (req, res) => {
 // Updating Goal for user
 // Currently takes JSON object with username and new goal
 // Returns JSON object with new goal
-app.put('/users/:user/goal', (req, res) => {
-  let user = req.params.user;
-  let username = req.body.username;
+app.put('/users/:user/goal', isAuthenticated, (req, res) => {
+
+  console.log(`req.user: ${req.user}`);
+  console.log(`params.user: ${req.params.user}`);
+  if (req.user.username !== req.params.user) {
+    return res.sendStatus(403);
+  }
+
+  let user = req.user.username;
   let goal = req.body.currentGoal;
 
   let query = {
@@ -109,8 +124,8 @@ app.put('/users/:user/goal', (req, res) => {
 });
 
 // Get all user info for dashboard
-app.get('/users/:user', (req, res) => {
-  let username = req.params.user;
+app.get('/users/:user', isAuthenticated, (req, res) => {
+  let username = req.user.username;
 
   let query = {
     username
@@ -189,7 +204,7 @@ app.post('/users', (req, res) => {
 // authenticate user
 app.post('/login', passport.authenticate('local'), (req, res) => {
   if (req.user) {
-    console.log(`Username: ${req.user.username}`);
+    console.log(`Login username: ${req.user.username}`);
     let redirectURL = '/user/' + req.user.username;
     res.status(200).json({
       "success": true,
