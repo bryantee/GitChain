@@ -104,7 +104,13 @@ function eventListeners() {
     let password2 = document.querySelector('#signup-password-2').value.trim();
 
     // TODO: Flash real message to user
-    if (password1 !== password2) return console.log("Passwords don't match")
+    if (password1 !== password2) {
+      let passwords = document.querySelectorAll('.password-input');
+      passwords.forEach( input => {
+        input.classList.add('is-danger');
+      });
+      document.querySelector('.help').classList.remove('hide');
+    }
 
     fetch('/users', {
       method: 'POST',
