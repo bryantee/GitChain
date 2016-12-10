@@ -19,7 +19,7 @@ function scheduler() {
       // Get initial info on user currently in DB //
       /////////////////////////////////////////////
 
-      User.find({ username}, (err, result) => {
+      User.findOne({ username}, (err, result) => {
         if (err) {
           console.log(`Error: ${err}`);
         }
@@ -30,20 +30,17 @@ function scheduler() {
         let twoDaysAgo = moment().subtract(2, 'days'); // Two days ago
         let streakDates; // Current array of streak dates
         let lastStreakDate; // Last date with streak increment
-        let lastCheck = result[0].lastCheck; // When was it last checked
-        let highStreak = result[0].highStreak; // High streak
-        let currentStreak = result[0].currentCommitStreakDays; //Current streak
+        let lastCheck = result.lastCheck; // When was it last checked
+        let highStreak = result.highStreak; // High streak
+        let currentStreak = result.currentCommitStreakDays; //Current streak
         console.log(`last check: ${lastCheck}`);
         console.log(`high streak: ${highStreak}`);
         console.log(`Currentstreak:${currentStreak}`);
+        streakDates = result.streakDates;
+        lastStreakDate = streakDates[streakDates.length - 1];
+        console.log(`streak dates: ${streakDates}`);
+        console.log(`last streak date: ${lastStreakDate}`);
 
-
-        if (result.hasOwnProperty('streakDates')) {
-          streakDates = result.streakDates;
-          lastStreakDate = streakDates[streakDates.length - 1];
-          console.log(`streak dates: ${streakDates}`);
-          console.log(`last streak date: ${lastStreakDate}`);
-        }
 
         /////////////////////
         // Makes decisions //
@@ -95,7 +92,7 @@ function scheduler() {
             $set: {
               commitsToday: data.today_count,
               lastCheck: new Date(),
-            }
+            },
           };
 
           if (currentStreak === 0) {
@@ -103,15 +100,21 @@ function scheduler() {
             update.$set.currentCommitStreakDays = 1;
             update.$set.highStreak = 1;
             update.$addToSet = {
-              streakDates: new moment()
+              streakDates: new moment().format('YYYY-MM-DD')
             };
           }
 
+          console.log('lastStreakDate', lastStreakDate);
+          console.log('moment', moment().format('YYYY-MM-DD'));
+
           // Increment streak and hight streak if needed
-          if (streakDates && lastStreakDate.isBefore(today, 'day') && lastStreakDate.isAfter(twoDaysAgo, 'day')) {
-            update.$inc.currentCommitStreakDays = 1;
+          if (lastStreakDate && lastStreakDate != moment().format('YYYY-MM-DD')) {
+            update.$inc = {currentCommitStreakDays: 1};
+            update.$addToSet = {
+              streakDates: new moment().format('YYYY-MM-DD')
+            }
             if ((currentStreak + 1) > highStreak) {
-              update.$inc.highStreak = 1;
+              update.$set.highStreak = currentStreak + 1;
             }
           }
 

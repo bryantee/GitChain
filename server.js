@@ -165,7 +165,8 @@ app.post('/users', (req, res) => {
             lastCheck: new Date(),
             highStreak: 0,
             currentCommitStreakDays: 0,
-            currentGoal: "Double click here to set your goal for the moment."
+            currentGoal: "Double click here to set your goal for the moment.",
+            streakDates: []
           };
 
           const url = "https://api.github.com/users/" + username;
