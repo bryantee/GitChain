@@ -187,7 +187,8 @@ function eventListeners() {
         fetch(url, {
           method: 'PUT',
           body: JSON.stringify({ currentGoal: newGoal }),
-          headers: new Headers({ "Content-Type": "application/json" })
+          headers: new Headers({ "Content-Type": "application/json" }),
+          credentials: 'include'
         })
           .then( response => {
             return response.json();
@@ -204,7 +205,8 @@ function eventListeners() {
         fetch(url, {
           method: 'POST',
           body: JSON.stringify({ username: username }),
-          headers: new Headers({ "Content-Type": "application/json"})
+          headers: new Headers({ "Content-Type": "application/json"}),
+          credentials: 'include'
         })
           .then(response => {
             if (response.status === 200) {
@@ -225,7 +227,9 @@ function main(username) {
   // Gets data from backend for authenticated user
   function getData(callback, username) {
     let url = '/users/' + username;
-    fetch(url)
+    fetch(url, {
+      credentials: 'include'
+    })
       .then(response => {
         return response.json();
       }).then( response => {
