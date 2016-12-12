@@ -53,24 +53,17 @@ passport.use('local', new LocalStrategy(
 ));
 
 passport.serializeUser(function(user, done) {
-  console.log('Serialize');
-  // console.log(`User: ${user}`);
-  console.log(`User id: ${user.id}`);
   done(null, user.id);
 });
 
 passport.deserializeUser(function(id, done) {
-  console.log(`id: ${id}`);
   User.findById(id, function(err, user) {
-    console.log('deserializeUser', err);
     done(err, user);
   });
 });
 
 function ensureAuthenticated(req, res, next) {
-  // console.log(req.user);
   if (req.isAuthenticated()) {
-    console.log('ensureAuthenticated returning next');
     return next();
   }
   res.sendStatus(403);
@@ -93,9 +86,6 @@ app.post('/user/update/:username', ensureAuthenticated, (req, res) => {
 // Currently takes JSON object with username and new goal
 // Returns JSON object with new goal
 app.put('/users/:user/goal', ensureAuthenticated, (req, res) => {
-
-  console.log(`req.user: ${req.user}`);
-  // console.log(`params.user: ${req.params.user}`);
   if (req.user.username !== req.params.user) {
     return res.sendStatus(403);
   }
@@ -206,7 +196,6 @@ app.post('/users', (req, res) => {
 // authenticate user
 app.post('/login', passport.authenticate('local'), (req, res) => {
   if (req.user) {
-    console.log(`Login username: ${req.user.username}`);
     let redirectURL = '/user/' + req.user.username;
     res.status(200).json({
       "success": true,
