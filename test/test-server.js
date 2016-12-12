@@ -16,6 +16,9 @@ describe('GitChain API', () => {
   // seed db
   before( done => {
     server.runServer( () => {
+      app.request.isAuthenticated = function() {
+        return true;
+      }
       User.create(
         {
           username: 'jason-voorhees',
@@ -46,6 +49,9 @@ describe('GitChain API', () => {
 
   // tear down db
   after( done => {
+    app.request.isAuthenticated = function() {
+      return false;
+    }
     User.remove( () => {
       done();
     });
@@ -61,6 +67,17 @@ describe('GitChain API', () => {
   //     });
   // });
   it('should return JSON with values for user on "/users/:user"', done => {
+    app.request.user = {
+      username: 'jason-voorhees',
+      password: '123',
+      avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
+      currentGoal: 'MURDERRR.',
+      currentCommitStreakDays: 5,
+      commitsToday: 1,
+      highStreak: 15,
+      lastCommit: new Date(),
+      lastCheck: new Date()
+    }
     chai.request(app)
       .get('/users')
       .end((err, res) => {
@@ -83,6 +100,17 @@ describe('GitChain API', () => {
       })
   });
   it('should update goal in database on POST to "/users/:user/goal"', done => {
+    app.request.user = {
+      username: 'freddy-krueger',
+      password: '123',
+      avatar: 'https://avatars.githubusercontent.com/u/10674447?v=3',
+      currentGoal: 'Slice children faces off',
+      currentCommitStreakDays: 10,
+      commitsToday: 7,
+      highStreak: 27,
+      lastCommit: new Date(),
+      lastCheck: new Date()
+    }
     chai.request(app)
       .put('/users/freddy-krueger/goal')
       .send({'username': 'freddy-krueger', 'currentGoal': 'Pick all the flowers'})
@@ -108,6 +136,10 @@ describe('GitChain API', () => {
         });
   });
   it('should add new user to db on POST to "/users" w valid JSON', done => {
+    app.request.user = {
+      username: 'norman-bates',
+      password: 123
+    }
     chai.request(app)
       .post('/users')
       .send({ 'username': 'norman-bates', 'password': '123' })

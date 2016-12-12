@@ -67,9 +67,10 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-function isAuthenticated(req, res, next) {
-  console.log(req.user);
-  if (req.user && req.user._id) {
+function ensureAuthenticated(req, res, next) {
+  // console.log(req.user);
+  if (req.isAuthenticated()) {
+    console.log('ensureAuthenticated returning next');
     return next();
   }
   res.sendStatus(403);
@@ -81,7 +82,7 @@ function isAuthenticated(req, res, next) {
 
 // Request update to github commit info
 // returns 200 to let client know db update complete
-app.post('/user/update/:username', isAuthenticated, (req, res) => {
+app.post('/user/update/:username', ensureAuthenticated, (req, res) => {
   let username = req.user.username;
   updateByUser(username, () => {
     res.sendStatus(200);
@@ -91,10 +92,10 @@ app.post('/user/update/:username', isAuthenticated, (req, res) => {
 // Updating Goal for user
 // Currently takes JSON object with username and new goal
 // Returns JSON object with new goal
-app.put('/users/:user/goal', isAuthenticated, (req, res) => {
+app.put('/users/:user/goal', ensureAuthenticated, (req, res) => {
 
   console.log(`req.user: ${req.user}`);
-  console.log(`params.user: ${req.params.user}`);
+  // console.log(`params.user: ${req.params.user}`);
   if (req.user.username !== req.params.user) {
     return res.sendStatus(403);
   }
@@ -124,7 +125,7 @@ app.put('/users/:user/goal', isAuthenticated, (req, res) => {
 });
 
 // Get all user info for dashboard
-app.get('/users/:user', isAuthenticated, (req, res) => {
+app.get('/users/:user', ensureAuthenticated, (req, res) => {
   let username = req.user.username;
 
   let query = {
