@@ -10,6 +10,8 @@ This is a programmer's take on building the chain. It monitors a user's GitHub a
 
 *Code. Commit. Build your chain.*
 
+![Imgur](http://i.imgur.com/WSgXu9e.png)
+
 ## Documentation
 
 You will need to use your GitHub username when you sign up for this to work. But don't worry, you can select any random throw away password as this will not be authenticating with GitHub, but rather consuming from the public API. Each day, at the end of the day, GitChain will automagically check to see if you have commits. If you'd like, you can visit at any point in time during the day and run the update which will fetch up-to-date commit data for your account and store it in the GC database. That's it!

@@ -64,7 +64,7 @@ function scheduler() {
 
           // Add check for time being after 11:55pm
           // If so, set streak back to 0. Sorry.
-          if ( moment().isAfter.moment('23:55', 'HH:mm') ) {
+          if ( moment().isAfter(moment('23:55', 'HH:mm')) ) {
             update.$set.currentCommitStreakDays = 0;
           }
 
