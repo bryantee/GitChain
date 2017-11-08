@@ -131,6 +131,8 @@ function eventListeners() {
         resetViews();
         logInView.classList.remove('hide');
         logInView.classList.add('show');
+      } else {
+        displayErrorMessage(`Something went wrong during signup`);
       }
     })
   });
@@ -220,7 +222,6 @@ function eventListeners() {
             updateBtn.classList.remove('is-loading');
           });
       });
-
     }).catch( e => {
       console.log(e);
       displayErrorMessage(e);
