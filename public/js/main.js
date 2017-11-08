@@ -153,6 +153,10 @@ function eventListeners() {
     .then( response => {
       if (response.status === 200) {
         return response.json();
+      } else if (response.status === 401) {
+        throw new Error(`Wrong username / password`);
+      } else {
+        throw new Error(`Something went wrong`);
       }
     }).then( j => {
       console.log(j);
@@ -217,8 +221,16 @@ function eventListeners() {
           });
       });
 
-    });
+    }).catch( e => {
+      console.log(e);
+      displayErrorMessage(e);
+    })
   });
+}
+
+function displayErrorMessage(e) {
+  const el = document.querySelector('#error-container');
+  el.textContent = e;
 }
 
 // Main function to call in "document ready"
