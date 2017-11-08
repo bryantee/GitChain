@@ -179,8 +179,9 @@ app.post('/users', (req, res) => {
 
               User.create(userObj, (err, result) => {
                 if (err) {
+                  console.error(`ERROR: ${err}`);
                   return res.status(500).json({
-                    message: 'Internal server error'
+                    message: `Internal server error: ${err}`
                   });
                 }
 
